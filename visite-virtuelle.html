@@ -3,282 +3,322 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Visite virtuelle UHD – T4 témoin, Les Jardins d'Armance (exemple) | TRIANGUL</title>
-<meta name="description" content="Visitez l'appartement témoin T4 des Jardins d'Armance en images ultra haute définition : chaque pièce le matin, à midi, au coucher du soleil et la nuit, au fil des quatre saisons. Visite guidée ou libre. Exemple fictif.">
+<title>Visite virtuelle 360° – T4 témoin, Les Jardins d'Armance (exemple) | TRIANGUL</title>
+<meta name="description" content="Visitez librement l'appartement témoin T4 des Jardins d'Armance en 360° photoréaliste : regardez tout autour de vous et passez d'une pièce à l'autre. Exemple fictif.">
 <link rel="canonical" href="https://triangul.fr/visite-virtuelle.html">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/css/style.css">
 <style>
   :root{--gold:#C5A059;--dark:#1F2A24}
-  html,body{height:100%;margin:0;overflow:hidden;background:#111;color:#fff;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+  html,body{height:100%;margin:0;overflow:hidden;background:#111;color:#fff;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;overscroll-behavior:none}
   *{box-sizing:border-box}
   button{font:inherit;cursor:pointer}
-  .stage{position:fixed;inset:0;overflow:hidden;background:#111;margin:0}
-  .shot{position:absolute;inset:0;margin:0;opacity:0;transition:opacity 1.3s cubic-bezier(.4,0,.2,1)}
-  .shot.on{opacity:1}
-  .shot img{width:100%;height:100%;object-fit:cover;transform:scale(1.07);will-change:transform}
-  .shot.on img{transform:scale(1);transition:transform 9s cubic-bezier(.25,.1,.25,1)}
-  .stage::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.45) 0,rgba(0,0,0,0) 22%,rgba(0,0,0,0) 55%,rgba(0,0,0,.62) 100%)}
+  #view{position:fixed;inset:0;display:block;width:100%;height:100%;cursor:grab;touch-action:none}
+  #view.drag{cursor:grabbing}
   .ui{position:fixed;z-index:5}
   .card{background:rgba(20,26,22,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.14);border-radius:16px}
-  .top{top:14px;left:14px;right:14px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+  .top{top:14px;left:14px;right:14px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;pointer-events:none}
+  .top>*{pointer-events:auto}
   .brand{display:flex;gap:10px;align-items:center;padding:10px 14px}
   .brand img{width:26px;height:26px}
-  .brand b{display:block;font-size:.95rem}
-  .brand span{font-size:.78rem;opacity:.85}
-  .vnav{display:flex;gap:6px;flex-wrap:wrap;padding:6px}
-  .btn{border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);color:#fff;border-radius:999px;padding:9px 15px;font-weight:600;font-size:.86rem;text-decoration:none;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
-  .ui .btn{width:auto;min-height:0;margin:0;line-height:1.2;box-shadow:none}
-  .btn:hover{background:rgba(255,255,255,.18)}
-  .btn.gold{background:var(--gold);border-color:var(--gold);color:var(--dark)}
-  .btn[aria-pressed=true]{background:#fff;color:var(--dark);border-color:#fff}
-  .rooms{top:96px;right:14px;padding:12px;width:220px}
-  .rooms h3,.bar h3{margin:0 0 8px;font:600 .7rem Inter,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
-  .rooms button{display:block;width:100%;text-align:left;background:none;border:0;color:#fff;padding:8px 10px;border-radius:10px;font-size:.92rem}
-  .rooms button:hover{background:rgba(255,255,255,.1)}
-  .rooms button[aria-current=true]{background:rgba(255,255,255,.92);color:var(--dark);font-weight:600}
-  .cap{left:clamp(16px,4vw,56px);bottom:150px;max-width:min(620px,calc(100% - 300px))}
-  .cap small{display:block;font:600 .74rem Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
-  .cap h1{font:500 clamp(2rem,4.6vw,3.6rem)/1.05 "Cormorant Garamond",Georgia,serif;margin:0 0 8px;text-shadow:0 2px 18px rgba(0,0,0,.5)}
-  .cap p{margin:0;font-size:clamp(.95rem,1.35vw,1.08rem);line-height:1.5;text-shadow:0 1px 10px rgba(0,0,0,.6)}
-  .cap .near{display:inline-block;margin-top:8px;font-size:.75rem;opacity:.85;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:3px 9px}
-  .cap>*{transition:opacity .6s ease,transform .6s ease}
-  .cap.swap>*{opacity:0;transform:translateY(10px)}
-  .bar{left:14px;right:14px;bottom:14px;padding:12px 14px;display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap}
-  .seg{display:flex;gap:4px;flex-wrap:wrap}
-  .seg button{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.06);color:#fff;border-radius:999px;padding:7px 13px;font-size:.84rem;font-weight:500}
-  .seg button[aria-pressed=true]{background:#fff;color:var(--dark);border-color:#fff;font-weight:600}
-  .bar .grow{flex:1}
-  .legal{font-size:.7rem;opacity:.75;max-width:420px;text-align:right}
-  .guide{left:50%;transform:translateX(-50%);bottom:150px;display:flex;gap:8px;align-items:center;padding:8px 10px}
+  .brand b{display:block;font-size:.95rem;color:#fff}
+  .brand span{font-size:.78rem;opacity:.85;color:#fff}
+  .acts{display:flex;gap:6px;flex-wrap:wrap;padding:6px}
+  .ui .btn{border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);color:#fff;border-radius:999px;padding:9px 15px;font-weight:600;font-size:.86rem;text-decoration:none;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;min-height:0;width:auto;margin:0;line-height:1.2}
+  .ui .btn:hover{background:rgba(255,255,255,.2);transform:none}
+  .ui .btn.gold{background:var(--gold);border-color:var(--gold);color:var(--dark)}
+  .ui .btn[aria-pressed=true]{background:#fff;color:var(--dark);border-color:#fff}
+  .cap{left:clamp(16px,4vw,48px);bottom:96px;max-width:min(560px,calc(100% - 32px));pointer-events:none}
+  .cap small{display:block;font:600 .74rem Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#E8C98A;margin-bottom:6px;text-shadow:0 1px 8px rgba(0,0,0,.7)}
+  .cap h1{font:500 clamp(2rem,4.4vw,3.4rem)/1.05 "Cormorant Garamond",Georgia,serif;margin:0 0 6px;color:#fff;text-shadow:0 2px 18px rgba(0,0,0,.55)}
+  .cap p{margin:0;font-size:clamp(.92rem,1.3vw,1.05rem);line-height:1.5;color:#fff;text-shadow:0 1px 10px rgba(0,0,0,.7)}
+  .cap>*{transition:opacity .5s ease,transform .5s ease}
+  .cap.swap>*{opacity:0;transform:translateY(8px)}
+  .rooms{left:14px;right:14px;bottom:14px;display:flex;gap:6px;align-items:center;padding:8px;overflow-x:auto}
+  .rooms button{border:0;background:none;color:#fff;border-radius:999px;padding:8px 14px;font-size:.88rem;white-space:nowrap}
+  .rooms button:hover{background:rgba(255,255,255,.12)}
+  .rooms button[aria-current=true]{background:#fff;color:var(--dark);font-weight:600}
+  .rooms .sep{flex:1}
+  .rooms .hint{font-size:.75rem;opacity:.8;white-space:nowrap;padding-right:8px}
+  .hs{position:fixed;z-index:4;left:0;top:0;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;border:0;background:none;color:#fff;padding:0;transition:opacity .25s}
+  .hs .ring{width:58px;height:58px;border-radius:50%;border:3px solid rgba(255,255,255,.95);background:rgba(255,255,255,.18);box-shadow:0 0 0 6px rgba(255,255,255,.15),0 6px 22px rgba(0,0,0,.35);transform:perspective(200px) rotateX(55deg);transition:transform .25s,background .25s}
+  .hs .lbl{font:600 .8rem Inter,sans-serif;background:rgba(20,26,22,.75);border-radius:999px;padding:5px 11px;white-space:nowrap;opacity:.9}
+  .hs:hover .ring,.hs.near .ring{background:rgba(197,160,89,.55);transform:perspective(200px) rotateX(55deg) scale(1.15)}
+  .hs:hover .lbl,.hs.near .lbl{opacity:1;background:var(--gold);color:var(--dark)}
+  .hs[hidden]{display:none}
+  .guide{left:50%;transform:translateX(-50%);bottom:84px;display:flex;gap:8px;align-items:center;padding:8px 10px}
   .prog{position:fixed;left:0;right:0;top:0;height:3px;z-index:6;background:rgba(255,255,255,.15)}
-  .prog i{display:block;height:100%;width:0;background:var(--gold);transition:width .4s ease}
-  .start{position:fixed;inset:0;z-index:20;display:grid;place-items:center;background:rgba(10,14,12,.55);backdrop-filter:blur(6px)}
-  .start .card{max-width:560px;margin:16px;padding:28px;text-align:center}
-  .start h2{font:500 2.2rem/1.1 "Cormorant Garamond",Georgia,serif;margin:0 0 10px}
-  .start p{margin:0 0 18px;opacity:.9;line-height:1.5}
-  .start .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .prog i{display:block;height:100%;width:0;background:var(--gold);transition:width .5s ease}
+  .veil{position:fixed;inset:0;z-index:20;display:grid;place-items:center;background:rgba(10,14,12,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  .veil .card{max-width:560px;margin:16px;padding:28px;text-align:center}
+  .veil h2{font:500 2.2rem/1.1 "Cormorant Garamond",Georgia,serif;margin:0 0 10px;color:#fff}
+  .veil p{margin:0 0 18px;line-height:1.5;color:#fff;opacity:.92}
+  .veil .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .bar{height:6px;border-radius:9px;background:rgba(255,255,255,.18);overflow:hidden;margin:6px 0 18px}
+  .bar i{display:block;height:100%;width:0;background:var(--gold);transition:width .3s}
+  .legal{position:fixed;right:16px;bottom:72px;z-index:3;font-size:.68rem;opacity:.7;pointer-events:none;text-align:right;max-width:340px}
   [hidden]{display:none!important}
-  .brand b,.brand span,.cap h1,.cap p,.start h2,.start p{color:#fff}
-  .cap small{color:#E8C98A;text-shadow:0 1px 8px rgba(0,0,0,.7)}
-  body.guiding .rooms,body.guiding .bar{opacity:0;pointer-events:none;transition:opacity .5s}
-  body.guiding .cap{bottom:96px}
-  body.guiding .guide{bottom:24px}
+  body.guiding .hs{opacity:.35;pointer-events:none}
   @media (max-width:900px){
-    .bar .legal,.bar .grow{display:none}
-    .bar{gap:8px;padding:8px 10px}
-    .bar h3{margin-bottom:4px}
-    .seg button{padding:5px 9px;font-size:.74rem}
-    .rooms{top:auto;bottom:178px;right:10px;left:10px;width:auto;display:flex;gap:4px;overflow-x:auto;padding:8px}
-    .rooms h3{display:none}
-    #roomList{display:flex;gap:4px}
-    .rooms button{width:auto;white-space:nowrap;flex:none}
-    .cap{max-width:calc(100% - 28px);bottom:250px}
-    .cap p{font-size:.9rem}
-    body.guiding .cap{bottom:110px}
-    .vnav .opt{display:none}
-    .legal{text-align:left}
-    .brand span{display:none}
-    .brand{padding:8px 12px}
-    .top{gap:6px}
-    .guide{left:10px;right:10px;transform:none;justify-content:center;flex-wrap:wrap;gap:6px}
-    .guide .btn,.vnav .btn{padding:8px 12px;font-size:.82rem}
+    .brand span,.acts .opt,.rooms .hint,.rooms .sep,.legal{display:none}
+    .cap{bottom:86px}
+    .guide{left:10px;right:10px;transform:none;justify-content:center;flex-wrap:wrap}
+    .hs .ring{width:48px;height:48px}
   }
-  @media (prefers-reduced-motion:reduce){.shot,.shot img,.cap>*{transition:none!important}.shot img{transform:none}}
 </style>
 </head>
 <body>
+<canvas id="view" aria-label="Vue à 360° de la pièce : faites glisser pour regarder autour de vous"></canvas>
 <div class="prog" id="prog" hidden><i></i></div>
-<main class="stage" id="stage" aria-live="polite">
-  <figure class="shot on" id="shotA"><img alt=""></figure>
-  <figure class="shot" id="shotB"><img alt=""></figure>
-</main>
+<div id="hsLayer"></div>
 
 <div class="ui top">
   <div class="card brand"><img src="assets/img/logo-mark-light.svg" alt=""><div><b>Les Jardins d'Armance — T4 témoin (lot B31)</b><span>82,4 m² · 3e étage · terrasse 22 m² sud-ouest · exemple fictif</span></div></div>
-  <div class="card vnav" role="navigation" aria-label="Actions">
+  <div class="card acts" role="navigation" aria-label="Actions">
     <button class="btn gold" type="button" id="btnGuide">▶ Visite guidée</button>
-    <a class="btn opt" href="galerie-t4.html">Galerie</a>
+    <a class="btn opt" href="visite-photos.html">Jour, nuit &amp; saisons</a>
     <a class="btn opt" href="maquette-3d.html">Maquette 3D</a>
-    <button class="btn opt" type="button" id="btnVoice" aria-pressed="false">Voix off</button>
     <button class="btn opt" type="button" id="btnFull">Plein écran</button>
-    <a class="btn gold" id="btnRdv" href="programme-exemple.html?lot=B31&amp;typo=T4#rdv">Prendre rendez-vous</a>
+    <a class="btn gold" href="programme-exemple.html?lot=B31&amp;typo=T4#rdv">Prendre rendez-vous</a>
   </div>
 </div>
 
-<aside class="ui card rooms" aria-label="Pièces"><h3>Pièces</h3><div id="roomList"></div></aside>
-
-<section class="ui cap" id="cap"><small id="capTag"></small><h1 id="capTitle"></h1><p id="capText"></p><span class="near" id="capNear" hidden>Vue la plus proche disponible</span></section>
+<section class="ui cap" id="cap" aria-live="polite"><small id="capTag"></small><h1 id="capTitle"></h1><p id="capText"></p></section>
 
 <div class="ui card guide" id="guideBar" hidden>
-  <button class="btn" type="button" id="gPrev" aria-label="Étape précédente">‹</button>
   <button class="btn" type="button" id="gPlay">Pause</button>
-  <button class="btn" type="button" id="gNext" aria-label="Étape suivante">›</button>
-  <span id="gCount" style="font-size:.8rem;opacity:.85;min-width:52px;text-align:center"></span>
+  <button class="btn" type="button" id="gNext">Pièce suivante ›</button>
+  <span id="gCount" style="font-size:.8rem;opacity:.85;min-width:44px;text-align:center"></span>
   <button class="btn" type="button" id="gStop">Explorer librement</button>
 </div>
 
-<div class="ui card bar">
-  <div><h3>Moment de la journée</h3><div class="seg" id="segM"></div></div>
-  <div><h3>Saison</h3><div class="seg" id="segS"></div></div>
-  <div class="grow"></div>
-  <div class="legal">Images de synthèse d'ambiance en ultra haute définition, non contractuelles. Exemple fictif. Mobilier et décoration non fournis ; seule la notice descriptive fait foi.</div>
-</div>
+<div class="ui card rooms" role="navigation" aria-label="Pièces"><div id="roomList" style="display:flex;gap:4px"></div><span class="sep"></span><span class="hint">Glissez pour regarder · cliquez sur un cercle pour avancer · molette pour zoomer</span></div>
+<div class="legal">Images de synthèse d'ambiance, non contractuelles. Exemple fictif. Mobilier et décoration non fournis.</div>
 
-<div class="start" id="start">
+<div class="veil" id="veil">
   <div class="card">
-    <h2>Visitez votre futur T4</h2>
-    <p>Découvrez chaque pièce en images ultra haute définition, le matin, à midi, au coucher du soleil et la nuit, au fil des quatre saisons.</p>
-    <div class="row"><button class="btn gold" type="button" id="startGuide">▶ Lancer la visite guidée</button><button class="btn" type="button" id="startFree">Explorer librement</button></div>
+    <h2>Visitez votre futur T4 en 360°</h2>
+    <p>Regardez tout autour de vous en faisant glisser la souris ou le doigt, puis cliquez sur les cercles au sol pour passer d'une pièce à l'autre.</p>
+    <div class="bar" id="loadBar"><i></i></div>
+    <div class="row" id="startRow" hidden><button class="btn gold" type="button" id="startGuide">▶ Visite guidée</button><button class="btn" type="button" id="startFree">Explorer librement</button></div>
+    <p id="loadTxt" style="font-size:.85rem;margin:0">Chargement des vues 360°…</p>
   </div>
 </div>
 
-<script>
-(() => {
-  const $ = (s) => document.querySelector(s);
-  const MOMENTS = { matin: "Matin", midi: "Plein midi", coucher: "Coucher de soleil", nuit: "Nuit" };
-  const SEASONS = { printemps: "Printemps", ete: "Été", automne: "Automne", hiver: "Hiver" };
-  /* Chaque image : moment natif (m) et saison (s, null = valable toute l'année). */
-  const ROOMS = {
-    entree:   { name: "L'entrée", tag: "≈ 4,6 m² · accès palier", text: "L'entrée s'ouvre directement sur le séjour lumineux, avec un grand placard de rangement intégré.",
-                imgs: [{ f: "entree", m: "midi", s: null }] },
-    sejour:   { name: "Le séjour", tag: "Séjour-cuisine ≈ 34 m² · baie sud-ouest", text: "Un grand volume ouvert sur 22 m² de terrasse : depuis le 3e étage, la lumière entre jusqu'au fond de la pièce.",
-                imgs: [{ f: "sejour-matin", m: "matin", s: null }, { f: "sejour-midi", m: "midi", s: null }, { f: "sejour-coucher", m: "coucher", s: null }, { f: "sejour-nuit", m: "nuit", s: null },
-                       { f: "sejour-hiver", m: "midi", s: "hiver" }, { f: "sejour-automne", m: "coucher", s: "automne" }] },
-    cuisine:  { name: "La cuisine", tag: "Cuisine ouverte avec îlot", text: "Îlot central, plan de travail en pierre claire et façades vert sauge : une cuisine pensée pour recevoir.",
-                imgs: [{ f: "cuisine-midi", m: "midi", s: null }, { f: "cuisine-coucher", m: "coucher", s: null }, { f: "cuisine-nuit", m: "nuit", s: null }] },
-    terrasse: { name: "La terrasse", tag: "22 m² · plein sud-ouest", text: "Une vraie pièce en plus, au 3e étage, avec une vue dégagée sur les arbres et les toits.",
-                imgs: [{ f: "terrasse-printemps", m: "matin", s: "printemps" }, { f: "terrasse-ete", m: "midi", s: "ete" }, { f: "terrasse-automne", m: "coucher", s: "automne" },
-                       { f: "terrasse-hiver", m: "matin", s: "hiver" }, { f: "terrasse-coucher", m: "coucher", s: null }, { f: "terrasse-nuit", m: "nuit", s: null }] },
-    suite:    { name: "La suite parentale", tag: "Chambre ≈ 15 m² · dressing · salle d'eau", text: "Une suite à part, au calme, prolongée par son dressing vitré et sa salle d'eau privative.",
-                imgs: [{ f: "suite-matin", m: "matin", s: null }, { f: "suite-coucher", m: "coucher", s: null }, { f: "suite-nuit", m: "nuit", s: null }] },
-    sdeau:    { name: "La salle d'eau", tag: "Salle d'eau privative ≈ 4,2 m²", text: "Douche à l'italienne, faïence toute hauteur et meuble vasque en chêne clair.",
-                imgs: [{ f: "sdeau", m: "midi", s: null }] },
-    chambre2: { name: "La chambre 2", tag: "≈ 10 m² · placard", text: "Une chambre lumineuse pour les enfants, les invités ou un bureau.",
-                imgs: [{ f: "chambre2", m: "midi", s: null }] },
-  };
-  const ORDER = ["entree", "sejour", "cuisine", "terrasse", "suite", "sdeau", "chambre2"];
-  const GUIDE = [
-    ["entree", "midi", null, "Bienvenue aux Jardins d'Armance. Poussez la porte de votre futur T4."],
-    ["sejour", "matin", null, "Le séjour au réveil : la lumière douce du matin traverse toute la pièce."],
-    ["sejour", "midi", null, "À midi, le séjour est baigné de lumière, grand ouvert sur la terrasse."],
-    ["cuisine", "midi", null, "La cuisine, ouverte sur le séjour, avec son îlot central en pierre claire."],
-    ["cuisine", "coucher", null, "En fin de journée, la lumière dorée entre par la fenêtre."],
-    ["terrasse", "matin", "printemps", "Au printemps, la terrasse s'éveille au milieu des arbres en fleurs."],
-    ["terrasse", "midi", "ete", "En été, le débord de toiture protège le salon d'extérieur du soleil de midi."],
-    ["terrasse", "coucher", "automne", "En automne, les feuillages se parent d'or et de rouge."],
-    ["terrasse", "matin", "hiver", "En hiver, la neige couvre les toits ; à l'intérieur, il fait bon."],
-    ["sejour", "midi", "hiver", "Le soleil bas d'hiver entre jusqu'au fond du séjour."],
-    ["sejour", "coucher", "automne", "Une fin d'après-midi d'automne, face aux arbres flamboyants."],
-    ["sejour", "coucher", "printemps", "Plein sud-ouest : le soleil vous accompagne jusqu'au soir."],
-    ["suite", "matin", null, "La suite parentale, au calme, avec son dressing vitré."],
-    ["sdeau", "midi", null, "Sa salle d'eau privative, avec douche à l'italienne."],
-    ["chambre2", "midi", null, "La chambre 2, pour les enfants, les invités ou un bureau."],
-    ["suite", "coucher", null, "Le soir, la lumière dorée filtre à travers les voilages."],
-    ["suite", "nuit", null, "La nuit, l'éclairage devient doux et chaleureux."],
-    ["cuisine", "nuit", null, "Les suspensions s'allument pour le dîner."],
-    ["sejour", "nuit", null, "Le séjour devient un cocon."],
-    ["terrasse", "nuit", null, "Et pour finir la journée, la terrasse sous les étoiles."],
-  ];
-  const state = { room: "sejour", m: "coucher", s: "printemps" };
-  const big = () => innerWidth * (devicePixelRatio || 1) >= 1200; /* ordinateurs et écrans haute densité : UHD 3840 px */
-  const src = (f) => "assets/img/visite/" + f + (big() ? "" : "-hd") + ".jpg";
-  const preload = (f) => { const i = new Image(); i.src = src(f); };
+<script type="module">
+import * as THREE from "./assets/js/vendor/three.module.min.js";
+const $ = (s) => document.querySelector(s);
 
-  /* Choix de la photo : 1) heure et saison exactes ; 2) la nuit, la vue de nuit ; 3) automne ou hiver, la vue de la saison ;
-     4) la vue de la saison ; 5) la vue de l'heure choisie ; 6) la vue par défaut. */
-  function pick(roomId, m, s) {
-    const L = ROOMS[roomId].imgs, f = (fn) => L.find(fn);
-    const im = f((i) => i.m === m && i.s === s) || f((i) => i.m === m && i.s === null && (m === "nuit" || !L.some((j) => j.s === s && j.m !== "nuit" && (s === "hiver" || s === "automne"))))
-      || (m === "nuit" && f((i) => i.m === "nuit"))
-      || ((s === "hiver" || s === "automne") && f((i) => i.s === s))
-      || f((i) => i.s === s) || f((i) => i.m === m) || L[0];
-    const exact = L.length === 1 || (im.m === m && (im.s === s || im.s === null)) || (im.s === s && m !== "nuit");
-    return { im, exact };
-  }
+/* Pièces : position des passages en fraction de l'image panoramique (x : 0 → 1 de gauche à droite, y : 0 → 1 de haut en bas). */
+const ROOMS = {
+  entree:   { name: "L'entrée", tag: "≈ 4,6 m² · accès palier", text: "L'entrée s'ouvre sur le séjour ; le couloir mène aux chambres.", look: .13,
+              links: [{ to: "sejour", x: .135, y: .64 }, { to: "suite", x: .905, y: .6 }, { to: "chambre2", x: .975, y: .6 }] },
+  sejour:   { name: "Le séjour", tag: "Séjour-cuisine ≈ 34 m² · baie sud-ouest", text: "Un grand volume traversant, ouvert sur 22 m² de terrasse.", look: .28,
+              links: [{ to: "terrasse", x: .29, y: .58 }, { to: "cuisine", x: .72, y: .66 }, { to: "entree", x: .94, y: .62 }] },
+  cuisine:  { name: "La cuisine", tag: "Cuisine ouverte avec îlot", text: "Îlot central en pierre claire, façades vert sauge, ouverte sur le séjour.", look: .43,
+              links: [{ to: "sejour", x: .66, y: .62 }, { to: "terrasse", x: .875, y: .62 }] },
+  terrasse: { name: "La terrasse", tag: "22 m² · plein sud-ouest", text: "Une vraie pièce en plus, au 3e étage, face au coucher du soleil.", look: .5,
+              links: [{ to: "sejour", x: .5, y: .64 }] },
+  suite:    { name: "La suite parentale", tag: "Chambre ≈ 15 m² · dressing · salle d'eau", text: "Une suite au calme, avec dressing vitré et salle d'eau privative.", look: .45,
+              links: [{ to: "sdeau", x: .925, y: .64 }, { to: "entree", x: .02, y: .62 }] },
+  sdeau:    { name: "La salle d'eau", tag: "Salle d'eau privative ≈ 4,2 m²", text: "Douche à l'italienne, faïence toute hauteur, meuble vasque en chêne.", look: .45,
+              links: [{ to: "suite", x: .91, y: .64 }] },
+  chambre2: { name: "La chambre 2", tag: "≈ 10 m² · placard", text: "Une chambre lumineuse pour les enfants, les invités ou un bureau.", look: .4,
+              links: [{ to: "entree", x: .94, y: .62 }] },
+};
+const ORDER = ["entree", "sejour", "cuisine", "terrasse", "suite", "sdeau", "chambre2"];
+const TOUR = [
+  ["entree", "Bienvenue aux Jardins d'Armance. Regardez autour de vous : l'entrée s'ouvre sur le séjour."],
+  ["sejour", "Le séjour, baigné de lumière, grand ouvert sur la terrasse."],
+  ["cuisine", "La cuisine ouverte, avec son îlot central en pierre claire."],
+  ["terrasse", "La terrasse plein sud-ouest, au 3e étage, face au coucher du soleil."],
+  ["sejour", "Retour au séjour pour rejoindre l'espace nuit."],
+  ["entree", "Le couloir mène aux chambres."],
+  ["suite", "La suite parentale, avec son dressing vitré."],
+  ["sdeau", "Sa salle d'eau privative, douche à l'italienne."],
+  ["suite", "Une suite pensée comme une chambre d'hôtel."],
+  ["entree", "Direction la deuxième chambre."],
+  ["chambre2", "La chambre 2, pour les enfants, les invités ou un bureau."],
+];
 
-  let front = $("#shotA"), back = $("#shotB"), current = "", ticket = 0;
-  function show(f, alt) {
-    if (f === current) return; current = f;
-    const t = ++ticket, img = back.querySelector("img");
-    const go = () => { if (t !== ticket) return; back.classList.add("on"); front.classList.remove("on"); [front, back] = [back, front]; };
-    img.alt = alt; img.onload = img.onerror = () => { if (t === ticket) requestAnimationFrame(() => requestAnimationFrame(go)); };
-    img.src = src(f);
-  }
-  function caption(r, text, near) {
-    const c = $("#cap"); c.classList.add("swap");
-    setTimeout(() => {
-      $("#capTag").textContent = r.tag; $("#capTitle").textContent = r.name; $("#capText").textContent = text || r.text;
-      $("#capNear").hidden = !near; c.classList.remove("swap");
-    }, 350);
-  }
-  function render(text) {
-    const r = ROOMS[state.room], p = pick(state.room, state.m, state.s);
-    show(p.im.f, r.name + " — " + MOMENTS[p.im.m] + (p.im.s ? ", " + SEASONS[p.im.s].toLowerCase() : ""));
-    caption(r, text, !p.exact && !guide);
-    document.querySelectorAll("#roomList button").forEach((b) => b.setAttribute("aria-current", String(b.dataset.r === state.room)));
-    document.querySelectorAll("#segM button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.m === state.m)));
-    document.querySelectorAll("#segS button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.s === state.s)));
-    ROOMS[state.room].imgs.forEach((i) => preload(i.f));
-  }
+/* ---------- Rendu ---------- */
+const canvas = $("#view");
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 1, 1100);
+const geo = new THREE.SphereGeometry(500, 96, 48); geo.scale(-1, 1, 1);
+const matA = new THREE.MeshBasicMaterial({ transparent: true, opacity: 1, depthWrite: false });
+const matB = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
+const meshA = new THREE.Mesh(geo, matA), meshB = new THREE.Mesh(geo, matB);
+meshB.renderOrder = 1; meshB.visible = false; scene.add(meshA, meshB);
 
-  ORDER.forEach((id) => { const b = document.createElement("button"); b.type = "button"; b.dataset.r = id; b.textContent = ROOMS[id].name; b.onclick = () => { stopGuide(); state.room = id; render(); }; $("#roomList").appendChild(b); });
-  Object.entries(MOMENTS).forEach(([k, v]) => { const b = document.createElement("button"); b.type = "button"; b.dataset.m = k; b.textContent = v; b.onclick = () => { stopGuide(); state.m = k; render(); }; $("#segM").appendChild(b); });
-  Object.entries(SEASONS).forEach(([k, v]) => { const b = document.createElement("button"); b.type = "button"; b.dataset.s = k; b.textContent = v; b.onclick = () => { stopGuide(); state.s = k; render(); }; $("#segS").appendChild(b); });
+const maxTex = renderer.capabilities.maxTextureSize;
+const small = maxTex < 4096 || Math.min(screen.width, screen.height) < 600;
+const tex = {};
+const loader = new THREE.TextureLoader();
 
-  /* ---------- Visite guidée ---------- */
-  const STEP_MS = 6500;
-  let guide = null;
-  function speak(t) { if ($("#btnVoice").getAttribute("aria-pressed") !== "true" || !("speechSynthesis" in window)) return; speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = "fr-FR"; speechSynthesis.speak(u); }
-  function guideStep(i) {
-    if (!guide) return;
-    guide.i = Math.max(0, Math.min(GUIDE.length - 1, i));
-    const [room, m, s, t] = GUIDE[guide.i];
-    state.room = room; state.m = m; state.s = s || state.s;
-    render(t); speak(t);
-    $("#gCount").textContent = guide.i + 1 + " / " + GUIDE.length;
-    $("#prog i").style.width = ((guide.i + 1) / GUIDE.length) * 100 + "%";
-    const nx = GUIDE[guide.i + 1]; if (nx) preload(pick(nx[0], nx[1], nx[2] || state.s).im.f);
-    clearTimeout(guide.t);
-    if (!guide.paused) guide.t = setTimeout(() => (guide.i < GUIDE.length - 1 ? guideStep(guide.i + 1) : endGuide()), STEP_MS);
-  }
-  function startGuide() {
-    $("#start").hidden = true; guide = { i: 0, paused: false, t: null };
-    document.body.classList.add("guiding"); $("#guideBar").hidden = false; $("#prog").hidden = false; $("#gPlay").textContent = "Pause";
-    guideStep(0);
-  }
-  function stopGuide() {
-    if (!guide) return; clearTimeout(guide.t); guide = null;
-    document.body.classList.remove("guiding"); $("#guideBar").hidden = true; $("#prog").hidden = true;
-    if ("speechSynthesis" in window) speechSynthesis.cancel();
-  }
-  function endGuide() {
-    stopGuide(); state.room = "sejour"; state.m = "coucher"; state.s = "printemps"; render("Ce lot vous plaît ? Un conseiller vous présente le plan et sa disponibilité.");
-  }
-  $("#btnGuide").onclick = startGuide; $("#startGuide").onclick = startGuide;
-  $("#startFree").onclick = () => { $("#start").hidden = true; };
-  $("#gNext").onclick = () => guide && (guide.i < GUIDE.length - 1 ? guideStep(guide.i + 1) : endGuide());
-  $("#gPrev").onclick = () => guide && guideStep(guide.i - 1);
-  $("#gStop").onclick = stopGuide;
-  $("#gPlay").onclick = () => { if (!guide) return; guide.paused = !guide.paused; $("#gPlay").textContent = guide.paused ? "Lecture" : "Pause"; guideStep(guide.i); };
-  $("#btnVoice").onclick = (e) => { const on = e.currentTarget.getAttribute("aria-pressed") !== "true"; e.currentTarget.setAttribute("aria-pressed", String(on)); if (!on && "speechSynthesis" in window) speechSynthesis.cancel(); };
-  $("#btnFull").onclick = () => { if (document.fullscreenElement) document.exitFullscreen(); else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => {}); };
-  function stepRoom(d) { const k = ORDER.indexOf(state.room) + d; state.room = ORDER[(k + ORDER.length) % ORDER.length]; render(); }
-  addEventListener("keydown", (e) => {
-    if (e.key === "Escape") { stopGuide(); $("#start").hidden = true; }
-    if (e.key === "ArrowRight") guide ? $("#gNext").click() : stepRoom(1);
-    if (e.key === "ArrowLeft") guide ? $("#gPrev").click() : stepRoom(-1);
+const view = { lon: 0, lat: 0, fov: 75, vlon: 0, vlat: 0 };
+let cur = null, offset = 0, busy = false;
+const D = Math.PI / 180;
+const lonOf = (x) => x * 360, latOf = (y) => 90 - y * 180;
+const wrap = (a) => ((a % 360) + 540) % 360 - 180;
+const ease = (t) => (t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+
+function setRoomTex(mesh, id, off) { mesh.material.map = tex[id]; mesh.material.needsUpdate = true; mesh.rotation.y = -off * D; }
+function dirOf(lon, lat) { const phi = (90 - lat) * D, th = lon * D; return new THREE.Vector3(Math.sin(phi) * Math.cos(th), Math.cos(phi), Math.sin(phi) * Math.sin(th)); }
+
+/* ---------- Repères de passage ---------- */
+const layer = $("#hsLayer");
+let hsEls = [];
+function buildHotspots() {
+  layer.innerHTML = ""; hsEls = [];
+  ROOMS[cur].links.forEach((l) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "hs";
+    b.innerHTML = '<span class="ring"></span><span class="lbl">' + ROOMS[l.to].name + "</span>";
+    b.setAttribute("aria-label", "Aller vers " + ROOMS[l.to].name);
+    b.addEventListener("click", (e) => { e.stopPropagation(); go(l.to, l); });
+    layer.appendChild(b); hsEls.push({ el: b, l });
   });
-  let sx = null;
-  addEventListener("touchstart", (e) => (sx = e.touches[0].clientX), { passive: true });
-  addEventListener("touchend", (e) => { if (sx === null) return; const dx = e.changedTouches[0].clientX - sx; sx = null; if (Math.abs(dx) < 50) return; if (guide) (dx < 0 ? $("#gNext") : $("#gPrev")).click(); else stepRoom(dx < 0 ? 1 : -1); });
-  document.addEventListener("visibilitychange", () => { if (guide && !guide.paused) { if (document.hidden) clearTimeout(guide.t); else guideStep(guide.i); } });
+}
+const tmp = new THREE.Vector3();
+function placeHotspots() {
+  const w = innerWidth, h = innerHeight;
+  hsEls.forEach(({ el, l }) => {
+    tmp.copy(dirOf(lonOf(l.x) + offset, latOf(l.y))).multiplyScalar(400).project(camera);
+    const inFront = tmp.z < 1 && Math.abs(tmp.x) < 1.2 && Math.abs(tmp.y) < 1.2;
+    el.hidden = !inFront || busy;
+    if (inFront) el.style.transform = `translate(${(tmp.x * .5 + .5) * w}px, ${(-tmp.y * .5 + .5) * h}px) translate(-50%,-50%)`;
+  });
+}
 
-  render();
-  if (location.hash === "#guidee") startGuide();
-  if (location.hash === "#libre") $("#start").hidden = true;
-  window.__visite = { state, pick, ROOMS, GUIDE, startGuide, stopGuide };
-})();
+/* ---------- Légende ---------- */
+function caption(id, text) {
+  const r = ROOMS[id], c = $("#cap"); c.classList.add("swap");
+  setTimeout(() => { $("#capTag").textContent = r.tag; $("#capTitle").textContent = r.name; $("#capText").textContent = text || r.text; c.classList.remove("swap"); }, 300);
+  document.querySelectorAll("#roomList button").forEach((b) => b.setAttribute("aria-current", String(b.dataset.r === id)));
+}
+
+/* ---------- Déplacement fluide d'une pièce à l'autre ---------- */
+function animate(ms, step) { return new Promise((res) => { const t0 = performance.now(); const f = (t) => { const k = Math.min(1, (t - t0) / ms); step(ease(k), k); if (k < 1) requestAnimationFrame(f); else res(); }; requestAnimationFrame(f); }); }
+async function go(id, link, text) {
+  if (busy || id === cur) { if (text) caption(id, text); return; }
+  busy = true; placeHotspots();
+  const r = ROOMS[cur], l = link || r.links.find((k) => k.to === id);
+  const fromLon = view.lon, fromLat = view.lat, fromFov = view.fov;
+  const toLon = l ? fromLon + wrap(lonOf(l.x) + offset - fromLon) : fromLon;
+  const toLat = l ? Math.max(-25, Math.min(5, latOf(l.y) + 18)) : 0;
+  view.vlon = view.vlat = 0;
+  /* 1) on se tourne vers le passage */
+  await animate(l ? 650 : 200, (e) => { view.lon = fromLon + (toLon - fromLon) * e; view.lat = fromLat + (toLat - fromLat) * e; });
+  /* 2) on avance : zoom vers le passage et fondu vers la pièce suivante, orientée dans le sens de la marche */
+  const nextOff = view.lon - lonOf(ROOMS[id].look);
+  setRoomTex(meshB, id, nextOff); matB.opacity = 0; meshB.visible = true;
+  const startFov = view.fov;
+  await animate(900, (e, k) => { view.fov = startFov - 28 * e; matB.opacity = Math.max(0, (k - .25) / .75); });
+  setRoomTex(meshA, id, nextOff); offset = nextOff; meshB.visible = false; matB.opacity = 0;
+  cur = id; buildHotspots(); caption(id, text);
+  /* 3) on arrive : la vue s'ouvre */
+  const f0 = view.fov, l0 = view.lat;
+  await animate(700, (e) => { view.fov = f0 + (fromFov - f0) * e; view.lat = l0 + (0 - l0) * e; });
+  busy = false; placeHotspots();
+}
+
+/* ---------- Souris, doigt, molette, clavier ---------- */
+let drag = null, idleT = performance.now();
+canvas.addEventListener("pointerdown", (e) => { canvas.setPointerCapture(e.pointerId); drag = { x: e.clientX, y: e.clientY, lon: view.lon, lat: view.lat, t: performance.now(), moved: 0, lx: e.clientX, ly: e.clientY }; canvas.classList.add("drag"); view.vlon = view.vlat = 0; idleT = performance.now(); if (tour) pauseTour(true); });
+canvas.addEventListener("pointermove", (e) => {
+  if (!drag) { nearest(e); return; }
+  const k = view.fov / 75 * 0.16, dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+  drag.moved = Math.max(drag.moved, Math.hypot(dx, dy));
+  view.lon = drag.lon - dx * k; view.lat = Math.max(-80, Math.min(80, drag.lat + dy * k));
+  view.vlon = -(e.clientX - drag.lx) * k; view.vlat = (e.clientY - drag.ly) * k; drag.lx = e.clientX; drag.ly = e.clientY;
+});
+canvas.addEventListener("pointerup", (e) => {
+  const d = drag; drag = null; canvas.classList.remove("drag"); idleT = performance.now();
+  if (d && d.moved < 6) { view.vlon = view.vlat = 0; const n = nearest(e); if (n) go(n.l.to, n.l); }
+});
+/* Un clic au sol dans la direction d'un passage y emmène, comme dans une visite Matterport. */
+function nearest(e) {
+  let best = null, bd = 140;
+  hsEls.forEach((h) => { h.el.classList.remove("near"); if (h.el.hidden) return; const r = h.el.getBoundingClientRect(); const d = Math.hypot(r.left + r.width / 2 - e.clientX, r.top + r.height / 2 - e.clientY); if (d < bd) { bd = d; best = h; } });
+  if (best) best.el.classList.add("near");
+  canvas.style.cursor = best ? "pointer" : "";
+  return best;
+}
+addEventListener("wheel", (e) => { e.preventDefault(); view.fov = Math.max(35, Math.min(95, view.fov + e.deltaY * 0.04)); idleT = performance.now(); }, { passive: false });
+let pinch = null;
+canvas.addEventListener("touchstart", (e) => { if (e.touches.length === 2) pinch = { d: Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY), f: view.fov }; }, { passive: true });
+canvas.addEventListener("touchmove", (e) => { if (pinch && e.touches.length === 2) { const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); view.fov = Math.max(35, Math.min(95, pinch.f * pinch.d / d)); } }, { passive: true });
+canvas.addEventListener("touchend", () => (pinch = null));
+addEventListener("keydown", (e) => {
+  if (e.key === "ArrowLeft") view.vlon = -2.2; if (e.key === "ArrowRight") view.vlon = 2.2;
+  if (e.key === "ArrowUp") view.vlat = 1.5; if (e.key === "ArrowDown") view.vlat = -1.5;
+  if (e.key === "Escape") { stopTour(); $("#veil").hidden = true; }
+  idleT = performance.now();
+});
+
+/* ---------- Boucle ---------- */
+function resize() { renderer.setSize(innerWidth, innerHeight, false); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }
+addEventListener("resize", resize); resize();
+function loop(t) {
+  if (!drag && !busy) {
+    view.lon += view.vlon; view.lat = Math.max(-80, Math.min(80, view.lat + view.vlat));
+    view.vlon *= .92; view.vlat *= .92;
+    if (Math.abs(view.vlon) < .002) view.vlon = 0; if (Math.abs(view.vlat) < .002) view.vlat = 0;
+    if ((tour && !tour.paused) || t - idleT > 6000) view.lon += 0.025;
+  }
+  camera.fov = view.fov; camera.updateProjectionMatrix();
+  camera.lookAt(dirOf(view.lon, view.lat));
+  renderer.render(scene, camera);
+  if (cur) placeHotspots();
+  requestAnimationFrame(loop);
+}
+
+/* ---------- Visite guidée ---------- */
+let tour = null;
+const TOUR_MS = 8000;
+function tourStep() {
+  if (!tour) return;
+  const [id, txt] = TOUR[tour.i];
+  $("#gCount").textContent = tour.i + 1 + " / " + TOUR.length;
+  $("#prog i").style.width = ((tour.i + 1) / TOUR.length) * 100 + "%";
+  go(id, null, txt).then(() => { if (!tour) return; clearTimeout(tour.t); if (!tour.paused) tour.t = setTimeout(nextStep, TOUR_MS); });
+  if (id === cur) { caption(id, txt); clearTimeout(tour.t); if (!tour.paused) tour.t = setTimeout(nextStep, TOUR_MS); }
+}
+function nextStep() { if (!tour) return; if (tour.i >= TOUR.length - 1) { stopTour(); caption(cur, "Ce lot vous plaît ? Un conseiller vous présente le plan et sa disponibilité."); return; } tour.i++; tourStep(); }
+function startTour() {
+  $("#veil").hidden = true; stopTour(); tour = { i: 0, paused: false, t: null };
+  document.body.classList.add("guiding"); $("#guideBar").hidden = false; $("#prog").hidden = false; $("#gPlay").textContent = "Pause";
+  tourStep();
+}
+function pauseTour(v) { if (!tour) return; tour.paused = v; clearTimeout(tour.t); $("#gPlay").textContent = v ? "Reprendre" : "Pause"; if (!v) tour.t = setTimeout(nextStep, TOUR_MS / 2); }
+function stopTour() { if (!tour) return; clearTimeout(tour.t); tour = null; document.body.classList.remove("guiding"); $("#guideBar").hidden = true; $("#prog").hidden = true; }
+$("#btnGuide").onclick = startTour; $("#startGuide").onclick = startTour;
+$("#startFree").onclick = () => { $("#veil").hidden = true; stopTour(); idleT = performance.now(); };
+$("#gPlay").onclick = () => tour && pauseTour(!tour.paused);
+$("#gNext").onclick = () => { if (tour) { clearTimeout(tour.t); nextStep(); } };
+$("#gStop").onclick = stopTour;
+$("#btnFull").onclick = () => { if (document.fullscreenElement) document.exitFullscreen(); else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => {}); };
+
+ORDER.forEach((id) => { const b = document.createElement("button"); b.type = "button"; b.dataset.r = id; b.textContent = ROOMS[id].name; b.onclick = () => { stopTour(); go(id); }; $("#roomList").appendChild(b); });
+
+/* ---------- Chargement de toutes les vues avant de commencer (aucun affichage progressif) ---------- */
+let done = 0;
+await Promise.all(ORDER.map((id) => new Promise((res) => {
+  loader.load("assets/img/360/" + id + (small ? "-m" : "") + ".jpg", (t) => {
+    t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = renderer.capabilities.getMaxAnisotropy(); t.minFilter = THREE.LinearFilter; t.generateMipmaps = false;
+    tex[id] = t; renderer.initTexture(t); done++; $("#loadBar i").style.width = (done / ORDER.length) * 100 + "%"; res();
+  }, undefined, () => { done++; res(); });
+})));
+cur = "sejour"; offset = 0; view.lon = lonOf(ROOMS.sejour.look);
+setRoomTex(meshA, cur, 0); buildHotspots(); caption(cur);
+$("#loadTxt").hidden = true; $("#loadBar").hidden = true; $("#startRow").hidden = false;
+requestAnimationFrame(loop);
+if (location.hash === "#guidee") startTour();
+if (location.hash === "#libre") $("#veil").hidden = true;
+window.__v360 = { view, ROOMS, go, get cur() { return cur; }, startTour, stopTour };
 </script>
 </body>
 </html>
