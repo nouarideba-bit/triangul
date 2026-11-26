@@ -78,6 +78,22 @@
   .vv-err{position:fixed;inset:0;display:grid;place-items:center;color:#fff;padding:20px;text-align:center;z-index:30;background:#1F2A24}
   .vv-poi-label{position:fixed;z-index:4;transform:translate(-50%,-50%);border:2px solid #fff;background:var(--brass);color:#1F2A24;border-radius:999px;font:600 .72rem var(--sans);padding:5px 10px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.3);white-space:nowrap}
   .vv-poi-label[hidden]{display:none}
+  .vv-render{position:fixed;inset:0;z-index:6;background:#111;overflow:hidden;opacity:0;transition:opacity 1.2s cubic-bezier(.4,0,.2,1)}
+  .vv-render[hidden]{display:none}
+  .vv-render.on{opacity:1}
+  .vv-render img{width:100%;height:100%;object-fit:cover;transform:scale(1.08);transition:transform 9s cubic-bezier(.25,.1,.25,1)}
+  .vv-render.on img{transform:scale(1)}
+  .vv-render::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.45) 0,rgba(0,0,0,0) 30%,rgba(0,0,0,0) 60%,rgba(0,0,0,.55) 100%);pointer-events:none}
+  .vv-render .cap{position:absolute;left:clamp(20px,5vw,64px);top:clamp(24px,6vh,64px);z-index:2;color:#fff;max-width:min(560px,88vw)}
+  .vv-render .cap small{display:block;letter-spacing:.18em;text-transform:uppercase;font:600 .75rem var(--sans);color:var(--brass);margin-bottom:8px}
+  .vv-render .cap h2{font:500 clamp(2rem,5vw,3.6rem)/1.05 var(--serif);margin:0;color:#fff}
+  .vv-render .cap>*{opacity:0;transform:translateY(18px);transition:opacity .9s ease .4s,transform .9s ease .4s}
+  .vv-render.on .cap>*{opacity:1;transform:none}
+  .vv-render .legal{position:absolute;right:clamp(20px,5vw,64px);top:8px;z-index:2;margin:0;font-size:.7rem;color:rgba(255,255,255,.8)}
+  .vv-caption{z-index:7}
+  .vv-bar,.vv-mapcard,.vv-poi,.vv-pad,.vv-poi-label{transition:opacity .6s ease}
+  .vv-rendering .vv-bar,.vv-rendering .vv-mapcard,.vv-rendering .vv-poi,.vv-rendering .vv-pad,.vv-rendering .vv-poi-label{opacity:0;pointer-events:none}
+  @media (prefers-reduced-motion:reduce){.vv-render,.vv-render img,.vv-render .cap>*{transition:none!important}}
   @media (max-width:860px){
     .vv-mapcard,.vv-poi{display:none}
     .vv-mapcard.open,.vv-poi.open{display:block}

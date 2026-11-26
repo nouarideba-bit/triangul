@@ -565,21 +565,52 @@ function say(text, buttons = true) {
 }
 function stopGuide() {
   if (!guide) return; const g = guide; guide = null; g.stopped = true; g.skip && g.skip();
-  caption.hidden = true; if ("speechSynthesis" in window) speechSynthesis.cancel();
+  caption.hidden = true; hideRender(); if ("speechSynthesis" in window) speechSynthesis.cancel();
+}
+/* Rendus HD intégrés à la visite guidée (mêmes images que galerie-t4.html) */
+const RENDUS = {
+  sejour: { src: "assets/img/rendus/t4-sejour.jpg", tag: "Pièce de vie", title: "Le séjour", alt: "Séjour avec canapé d'angle en lin, parquet chêne en point de Hongrie et baie vitrée ouvrant sur la terrasse, au coucher du soleil" },
+  cuisine: { src: "assets/img/rendus/t4-cuisine.jpg", tag: "Cuisine ouverte", title: "La cuisine", alt: "Cuisine vert olive avec îlot central, plan de travail en pierre claire et suspensions" },
+  terrasse: { src: "assets/img/rendus/t4-terrasse.jpg", tag: "Extérieur · 22 m²", title: "La terrasse", alt: "Terrasse en bois avec salon d'extérieur, garde-corps en verre et vue dégagée sur les toits au coucher du soleil" },
+  suite: { src: "assets/img/rendus/t4-suite.jpg", tag: "Espace nuit", title: "La suite parentale", alt: "Suite parentale aux tons crème avec dressing vitré éclairé" },
+};
+const renderBox = document.createElement("div");
+renderBox.className = "vv-render"; renderBox.hidden = true; renderBox.setAttribute("aria-live", "polite");
+renderBox.innerHTML = '<img alt=""><div class="cap"><small></small><h2></h2></div><p class="legal">Image de synthèse d\'ambiance, non contractuelle. Exemple fictif. Mobilier et décoration non fournis.</p>';
+document.body.appendChild(renderBox);
+function preloadRendus() { Object.values(RENDUS).forEach((r) => { const i = new Image(); i.src = r.src; }); }
+function showRender(key) {
+  const r = RENDUS[key], img = renderBox.querySelector("img");
+  renderBox.classList.remove("on"); img.src = r.src; img.alt = r.alt;
+  renderBox.querySelector("small").textContent = r.tag; renderBox.querySelector("h2").textContent = r.title;
+  panel.hidden = true; renderBox.hidden = false; document.body.classList.add("vv-rendering");
+  const reveal = () => requestAnimationFrame(() => requestAnimationFrame(() => renderBox.classList.add("on")));
+  img.complete ? reveal() : (img.onload = img.onerror = reveal);
+}
+function hideRender() {
+  if (renderBox.hidden) return;
+  renderBox.classList.remove("on"); document.body.classList.remove("vv-rendering");
+  setTimeout(() => { if (!renderBox.classList.contains("on")) renderBox.hidden = true; }, calm() ? 0 : 900);
 }
 async function runGuide() {
   stopGuide(); panel.hidden = true; setMeasure(false);
   const g = (guide = { stopped: false });
   const step = (ms) => new Promise((res) => { const t = setTimeout(res, calm() ? Math.min(ms, 3500) : ms); g.skip = () => { clearTimeout(t); res(); }; });
   const P = (id) => POIS.find((p) => p.id === id);
+  preloadRendus();
+  const rendu = async (key, text, ms = 7000) => { if (g.stopped) return; showRender(key); say(text); await step(ms); hideRender(); };
   state.amb = "scandi"; state.livre = false; $("#btnLivre").setAttribute("aria-pressed", "false"); applyFinishes(); applyAmbiance(); setSeason("printemps"); setHour(13.5);
   const steps = [
     async () => { Object.assign(player, { x: 4.0, z: 0.45 }, lookAngles(4.0, 0.45, 1.65, [3.6, 1.4, 6])); say("Bienvenue aux Jardins d'Armance. Entrez dans votre futur T4."); await step(5000); },
     async () => { goTo(P("salon").pos, P("salon").look, 3); showPoi(P("salon")); say("82 m² pensés pour la vie de famille, avec un séjour ouvert sur 22 m² de terrasse."); await step(9000); },
+    () => rendu("sejour", "Le séjour en rendu photoréaliste : depuis le 3e étage, la lumière du soir entre jusqu'au fond de la pièce."),
     async () => { await goTo(P("cuisine").pos, P("cuisine").look, 2.5); if (g.stopped) return; say("La cuisine s'ouvre sur le séjour. Changez les finitions d'un clic : le statut de chaque option est indiqué."); showMats(); await step(4000); if (g.stopped) return; state.fin.solsJour = "beton-cire"; applyFinishes(); showMats(); await step(5000); state.fin.solsJour = DEFAULTS.solsJour; applyFinishes(); panel.hidden = true; },
+    () => rendu("cuisine", "Îlot central, plan de travail en pierre claire et façades mates : une cuisine pensée pour recevoir."),
     async () => { await goTo(P("terrasse").pos, P("terrasse").look, 3); if (g.stopped) return; showPoi(P("terrasse")); say("Plein sud-ouest : le soleil vous accompagne jusqu'au soir."); await animateHour(clamp(info.set - .3, 13.5, 22), 7); await step(2500); },
+    () => rendu("terrasse", "La terrasse au coucher du soleil : une vraie pièce en plus, avec une vue dégagée."),
     async () => { await goTo([3.0, 0, 8.4], [3.4, 1.0, 3.5], 2); if (g.stopped) return; panel.hidden = true; setSeason("ete"); setHour(13.5); say("En été, le soleil est haut : le débord protège le séjour de la chaleur."); await step(5500); if (g.stopped) return; setSeason("hiver"); setHour(13.5); say("En hiver, le soleil bas entre jusqu'au fond du séjour."); await step(6500); setSeason("printemps"); },
     async () => { setHour(presetHour("nuit")); await goTo(P("suite").pos, P("suite").look, 3); if (g.stopped) return; showPoi(P("suite")); say("Une suite à part, avec dressing et salle d'eau. Le soir, l'éclairage devient chaleureux."); await step(4500); if (g.stopped) return; state.amb = "contemp"; applyAmbiance(); say("Et voici la même pièce dans l'ambiance Chic Contemporain."); await step(5000); },
+    () => rendu("suite", "La suite parentale en rendu photoréaliste, prolongée par son dressing vitré."),
     async () => { setHour(13.5); await goTo(P("chambres").pos, P("chambres").look, 2.5); if (g.stopped) return; showPoi(P("chambres")); say("Deux chambres, pour les enfants ou un bureau."); await step(5500); },
     async () => {
       setHour(presetHour("nuit")); await goTo([6.2, 0, 7.0], [1.2, 1.0, 3.0], 3); if (g.stopped) return; summary();
@@ -793,4 +824,4 @@ $("#loading").textContent = "Maquette prête.";
 $("#startGuide").onclick = () => { $("#start").hidden = true; runGuide(); };
 $("#startFree").onclick = () => { $("#start").hidden = true; canvas.focus(); };
 if (location.hash === "#libre") $("#start").hidden = true;
-window.__vv = { state, player, setHour, setSeason, applyAmbiance, setLivre, runGuide, stopGuide, goTo, POIS, dayInfo, sunPos, showMats, visitPoi };
+window.__vv = { state, player, setHour, setSeason, applyAmbiance, setLivre, runGuide, stopGuide, goTo, POIS, dayInfo, sunPos, showMats, visitPoi, showRender, hideRender };
