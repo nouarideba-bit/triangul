@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Visite virtuelle 3D – T4 témoin, Les Jardins d'Armance (exemple) | TRIANGUL</title>
+<meta name="description" content="Visitez en 3D l'appartement témoin T4 des Jardins d'Armance : déplacement libre, visite guidée, lumière selon l'heure et la saison, ambiances et matériaux au choix. Exemple fictif.">
+<link rel="canonical" href="https://triangul.fr/visite-virtuelle.html">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  html,body{height:100%;margin:0;overflow:hidden;background:#1F2A24}
+  body.vv{font-family:var(--sans);color:var(--ink)}
+  #scene{position:fixed;inset:0;display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+  #scene.measuring{cursor:crosshair}
+  .vv-bar{position:fixed;left:12px;right:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;pointer-events:none;z-index:5}
+  .vv-bar>*{pointer-events:auto}
+  .vv-top{top:12px}
+  .vv-bottom{bottom:12px;align-items:flex-end}
+  .vv-card{background:rgba(249,248,246,.94);border:1px solid var(--line);border-radius:12px;padding:8px 10px;box-shadow:0 6px 24px rgba(0,0,0,.18);backdrop-filter:blur(6px)}
+  .vv-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--sage)}
+  .vv-brand img{height:22px}
+  .vv-brand span{font:600 .78rem/1.2 var(--sans)}
+  .vv-brand small{display:block;font-weight:400;color:var(--muted)}
+  .vv-seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#fff}
+  .vv-seg button{border:0;background:transparent;padding:7px 12px;font:500 .78rem var(--sans);color:var(--ink);cursor:pointer}
+  .vv-seg button[aria-pressed="true"]{background:var(--sage);color:#fff}
+  .vv-btn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 12px;font:500 .78rem var(--sans);color:var(--ink);cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-block}
+  .vv-btn[aria-pressed="true"]{background:var(--sage);color:#fff;border-color:var(--sage)}
+  .vv-btn.brass{background:var(--brass);border-color:var(--brass);color:#1F2A24;font-weight:600}
+  .vv-btn:focus-visible,.vv-seg button:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+  .vv-spacer{flex:1}
+  .vv-time{display:flex;flex-direction:column;gap:6px;min-width:min(520px,100%)}
+  .vv-time .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .vv-time input[type=range]{flex:1;min-width:160px;accent-color:var(--sage)}
+  .vv-time output{font:600 .95rem var(--sans);color:var(--sage);min-width:52px}
+  .vv-presets button{font-size:.72rem;padding:5px 9px}
+  .vv-sun{font-size:.74rem;color:var(--muted);line-height:1.35}
+  .vv-sun strong{color:var(--ink)}
+  .vv-legal{font-size:.68rem;color:var(--muted)}
+  #minimap{width:200px;height:150px;display:block;cursor:pointer}
+  .vv-mapcard{position:fixed;right:12px;top:128px;z-index:5;padding:6px}
+  .vv-mapcard p{margin:4px 2px 0;font-size:.68rem;color:var(--muted)}
+  .vv-poi{position:fixed;right:12px;top:314px;z-index:5;width:200px;padding:8px}
+  .vv-poi h3{font:600 .72rem var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--brass-dark);margin:2px 2px 6px}
+  .vv-poi button{display:block;width:100%;text-align:left;border:0;background:transparent;padding:6px 6px;border-radius:8px;font:500 .8rem var(--sans);cursor:pointer;color:var(--ink)}
+  .vv-poi button:hover,.vv-poi button[aria-current="true"]{background:var(--sage-soft)}
+  .vv-panel{position:fixed;left:12px;top:128px;z-index:6;width:min(340px,calc(100% - 24px));max-height:calc(100% - 310px);overflow:auto;padding:14px 16px}
+  .vv-panel h2{font-size:1.35rem;margin:0 0 4px;padding-right:20px}
+  .vv-panel .meta{font-size:.78rem;color:var(--muted);margin:0 0 8px}
+  .vv-panel p{font-size:.86rem;line-height:1.45;margin:6px 0}
+  .vv-panel ul{font-size:.84rem;padding-left:18px;margin:6px 0}
+  .vv-close{position:absolute;right:8px;top:6px;border:0;background:transparent;font-size:1.3rem;cursor:pointer;color:var(--muted)}
+  .vv-mats h3{font:600 .78rem var(--sans);margin:12px 0 6px;color:var(--sage)}
+  .vv-swatches{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+  .vv-sw{border:1px solid var(--line);border-radius:10px;background:#fff;padding:6px;text-align:left;cursor:pointer;font:500 .74rem var(--sans);color:var(--ink)}
+  .vv-sw[aria-pressed="true"]{border-color:var(--sage);box-shadow:0 0 0 2px var(--sage) inset}
+  .vv-sw i{display:block;height:28px;border-radius:6px;margin-bottom:5px;background-size:cover}
+  .tag{display:inline-block;margin-top:3px;font:600 .62rem var(--sans);letter-spacing:.04em;text-transform:uppercase;padding:2px 6px;border-radius:999px}
+  .tag.inclus{background:#DCE4DD;color:#24332B}
+  .tag.option{background:#F3E6C7;color:#6B4F17}
+  .tag.deco{background:#E9E4DA;color:#5B625D}
+  .tag.confirmer{background:#F6DADA;color:#7A2B2B}
+  .vv-caption{position:fixed;left:50%;transform:translateX(-50%);bottom:178px;z-index:6;max-width:min(680px,calc(100% - 24px));background:rgba(31,42,36,.86);color:#fff;border-radius:10px;padding:10px 14px;font-size:.95rem;line-height:1.4;text-align:center}
+  .vv-caption[hidden],.vv-measure[hidden],.vv-panel[hidden]{display:none}
+  .vv-measure{position:fixed;left:50%;top:72px;transform:translateX(-50%);z-index:6;background:var(--sage);color:#fff;border-radius:999px;padding:7px 14px;font:600 .85rem var(--sans)}
+  .vv-pad{position:fixed;left:16px;bottom:190px;z-index:5;display:none;grid-template-columns:repeat(3,46px);grid-template-rows:repeat(2,46px);gap:6px}
+  .vv-pad button{border:1px solid var(--line);background:rgba(249,248,246,.9);border-radius:12px;font-size:1.1rem;color:var(--sage);touch-action:none}
+  .touch .vv-pad{display:grid}
+  .vv-start{position:fixed;inset:0;z-index:20;display:grid;place-items:center;background:linear-gradient(180deg,rgba(31,42,36,.55),rgba(31,42,36,.85))}
+  .vv-start[hidden]{display:none}
+  .vv-start .box{background:var(--paper);border-radius:16px;padding:26px 26px 22px;max-width:520px;margin:16px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+  .vv-start h1{font-size:2rem;margin:4px 0 8px}
+  .vv-start p{font-size:.92rem;line-height:1.5;margin:8px 0}
+  .vv-start .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  .vv-start .kbd{font-size:.78rem;color:var(--muted)}
+  .vv-loading{font-size:.8rem;color:var(--muted)}
+  .vv-err{position:fixed;inset:0;display:grid;place-items:center;color:#fff;padding:20px;text-align:center;z-index:30;background:#1F2A24}
+  .vv-poi-label{position:fixed;z-index:4;transform:translate(-50%,-50%);border:2px solid #fff;background:var(--brass);color:#1F2A24;border-radius:999px;font:600 .72rem var(--sans);padding:5px 10px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.3);white-space:nowrap}
+  .vv-poi-label[hidden]{display:none}
+  @media (max-width:860px){
+    .vv-mapcard,.vv-poi{display:none}
+    .vv-mapcard.open,.vv-poi.open{display:block}
+    .vv-poi{top:128px}
+    .vv-caption{bottom:240px;font-size:.85rem}
+    .vv-time{min-width:100%}
+    .vv-brand small{display:none}
+  }
+</style>
+</head>
+<body class="vv">
+<canvas id="scene" aria-label="Vue 3D de l'appartement témoin T4. Utilisez les flèches ou ZQSD pour vous déplacer."></canvas>
+
+<div class="vv-bar vv-top">
+  <a class="vv-card vv-brand" href="programme-exemple.html" title="Retour au programme">
+    <img src="assets/img/logo-mark.svg" alt="TRIANGUL">
+    <span>Les Jardins d'Armance — T4 témoin (lot B31)<small>82,4 m² · 3e étage · terrasse 22 m² sud-ouest · exemple fictif</small></span>
+  </a>
+  <div class="vv-spacer"></div>
+  <div class="vv-card" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+    <div class="vv-seg" role="group" aria-label="Ambiance décorative">
+      <button type="button" data-amb="scandi" aria-pressed="true">Minimaliste Scandinave</button>
+      <button type="button" data-amb="contemp" aria-pressed="false">Chic Contemporain</button>
+    </div>
+    <button type="button" class="vv-btn" id="btnMats" aria-pressed="false">Sols et murs</button>
+    <button type="button" class="vv-btn" id="btnLivre" aria-pressed="false" title="Retire le mobilier et remet les finitions incluses">Version livrée</button>
+    <button type="button" class="vv-btn" id="btnCompare" title="Maintenir appuyé pour voir la version livrée">Comparer</button>
+    <button type="button" class="vv-btn" id="btnMeasure" aria-pressed="false">Mètre</button>
+    <button type="button" class="vv-btn" id="btnGuide">Visite guidée</button>
+    <button type="button" class="vv-btn" id="btnMap" aria-pressed="false">Plan</button>
+    <button type="button" class="vv-btn" id="btnFull">Plein écran</button>
+  </div>
+</div>
+
+<div class="vv-card vv-mapcard" id="mapCard">
+  <canvas id="minimap" width="400" height="300" aria-label="Plan 2D : cliquez sur une pièce pour vous y rendre"></canvas>
+  <p>Plan indicatif · cliquez sur une pièce</p>
+</div>
+<nav class="vv-card vv-poi" id="poiList" aria-label="Points d'intérêt">
+  <h3>Points d'intérêt</h3>
+</nav>
+
+<aside class="vv-card vv-panel" id="panel" hidden aria-live="polite"></aside>
+<div class="vv-caption" id="caption" hidden role="status" aria-live="polite"></div>
+<div class="vv-measure" id="measureOut" hidden></div>
+
+<div class="vv-pad" aria-hidden="true">
+  <span></span><button type="button" data-move="f">▲</button><span></span>
+  <button type="button" data-move="l">◀</button><button type="button" data-move="b">▼</button><button type="button" data-move="r">▶</button>
+</div>
+
+<div class="vv-bar vv-bottom">
+  <div class="vv-card vv-time">
+    <div class="row">
+      <label for="hour" style="font:600 .78rem var(--sans);color:var(--sage)">Heure</label>
+      <input type="range" id="hour" min="6" max="23" step="0.25" value="13.5" aria-describedby="sunInfo">
+      <output id="hourOut" for="hour">13:30</output>
+    </div>
+    <div class="row">
+      <div class="vv-seg vv-presets" role="group" aria-label="Moments de la journée">
+        <button type="button" data-preset="matin" aria-pressed="false">Matin</button>
+        <button type="button" data-preset="midi" aria-pressed="true">Plein midi</button>
+        <button type="button" data-preset="coucher" aria-pressed="false">Coucher de soleil</button>
+        <button type="button" data-preset="nuit" aria-pressed="false">Nuit</button>
+      </div>
+      <div class="vv-seg vv-presets" role="group" aria-label="Saison">
+        <button type="button" data-season="hiver" aria-pressed="false">Hiver</button>
+        <button type="button" data-season="printemps" aria-pressed="true">Printemps</button>
+        <button type="button" data-season="ete" aria-pressed="false">Été</button>
+        <button type="button" data-season="automne" aria-pressed="false">Automne</button>
+      </div>
+    </div>
+    <div class="vv-sun" id="sunInfo"></div>
+    <div class="vv-legal">Images de synthèse non contractuelles. Exemple fictif. Simulation d'ensoleillement indicative, calculée sans les bâtiments et arbres voisins.</div>
+  </div>
+  <div class="vv-spacer"></div>
+  <div class="vv-card" style="display:flex;gap:6px;flex-wrap:wrap">
+    <button type="button" class="vv-btn" id="btnSave">Enregistrer mes choix</button>
+    <a class="vv-btn brass" id="btnRdv" href="programme-exemple.html?lot=B31&amp;typo=T4#rdv" data-track="cta_rdv">Prendre rendez-vous</a>
+  </div>
+</div>
+
+<div class="vv-start" id="start">
+  <div class="box">
+    <p class="eyebrow" style="margin:0">Visite virtuelle 3D · exemple fictif</p>
+    <h1>Entrez dans votre futur T4</h1>
+    <p>Appartement témoin du lot B31 : 82,4 m², 3e étage, terrasse de 22 m² orientée sud-ouest. Changez l'heure et la saison pour voir la lumière, essayez deux ambiances et les finitions.</p>
+    <p class="kbd">Ordinateur : ZQSD, WASD ou flèches pour avancer, glisser pour regarder, clic au sol pour s'y rendre. Tablette : glisser pour regarder, toucher le sol pour avancer.</p>
+    <label class="kbd" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="optVoice"> Voix off pendant la visite guidée</label>
+    <label class="kbd" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="optCalm"> Mouvements réduits (pas de déplacement automatique de la caméra)</label>
+    <div class="btn-row">
+      <button type="button" class="btn btn-brass" id="startGuide" disabled>Commencer la visite guidée</button>
+      <button type="button" class="btn btn-ghost" id="startFree" disabled style="color:var(--sage);border-color:var(--sage)">Explorer librement</button>
+    </div>
+    <p class="vv-loading" id="loading">Chargement de la maquette…</p>
+  </div>
+</div>
+
+<noscript><div class="vv-err">La visite 3D nécessite JavaScript. <a style="color:#C5A059" href="programme-exemple.html">Retour au programme</a></div></noscript>
+<script type="module" src="assets/js/visite.js"></script>
+</body>
+</html>
