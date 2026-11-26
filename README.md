@@ -24,8 +24,7 @@ Aperçu : https://nouarideba-bit.github.io/triangul/
 Les pages sont générées à partir des sources de `_src/pages/` :
 
 ```bash
-python3 _src/build.py                                   # régénère toutes les pages
-TRIANGUL_CONTACT=autre@triangul.fr python3 _src/build.py # change l'adresse de contact
+TRIANGUL_CONTACT=adresse@triangul.fr python3 _src/build.py   # régénère toutes les pages avec l'adresse de contact
 ```
 
 - **Programmes** : modifier `assets/js/programmes-data.js` (un bloc par programme ; `exemple: true` affiche le badge « Exemple »).

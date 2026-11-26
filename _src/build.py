@@ -7,7 +7,7 @@ chacune précédée d'un en-tête <!--PAGE {...}-->) et écrit les pages finales
 robots.txt. Le dossier _src n'est pas publié par GitHub Pages.
 
 L'adresse de contact affichée sur le site se règle avec la variable
-d'environnement TRIANGUL_CONTACT (par défaut : contact@triangul.fr).
+d'environnement TRIANGUL_CONTACT (obligatoire).
 """
 import datetime
 import html
@@ -20,7 +20,7 @@ SRC = Path(__file__).resolve().parent
 SITE = SRC.parent
 
 CONFIG = {
-    "contact": os.environ.get("TRIANGUL_CONTACT", "contact@triangul.fr"),
+    "contact": os.environ.get("TRIANGUL_CONTACT", ""),  # obligatoire : adresse de contact du site
     "base_url": "https://triangul.fr/",      # adresse définitive du site
     "preview": True,                         # bandeau « version de présentation »
 }
@@ -182,6 +182,8 @@ def render(meta, body):
 
 
 def main():
+    if not CONFIG["contact"]:
+        raise SystemExit("Indiquez l'adresse de contact : TRIANGUL_CONTACT=adresse@triangul.fr python3 _src/build.py")
     pages = []
     for f in sorted((SRC / "pages").glob("*.html")):
         text = f.read_text(encoding="utf-8")
