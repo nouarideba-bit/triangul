@@ -585,6 +585,7 @@ function stopGuide() {
   caption.hidden = true; if ("speechSynthesis" in window) speechSynthesis.cancel();
 }
 async function runGuide() {
+  location.href = "visite-virtuelle.html#guidee"; return; /* la visite guidée est désormais 100 % en photos UHD */
   stopGuide(); panel.hidden = true; setMeasure(false);
   const g = (guide = { stopped: false });
   const step = (ms) => new Promise((res) => { const t = setTimeout(res, calm() ? Math.min(ms, 3500) : ms); g.skip = () => { clearTimeout(t); res(); }; });
