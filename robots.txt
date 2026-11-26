@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /espace-partenaires/
+Sitemap: https://triangul.fr/sitemap.xml
