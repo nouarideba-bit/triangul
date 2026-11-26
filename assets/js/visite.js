@@ -604,21 +604,51 @@ function updateRdvLink() {
 }
 
 /* ---------- Mètre ---------- */
-let measuring = false, mPts = [];
-const mGroup = new THREE.Group(); scene.add(mGroup);
+let measuring = false, mPts = [], mPreview = null;
+const mGroup = new THREE.Group(); mGroup.renderOrder = 999; scene.add(mGroup);
+const M_GOLD = "#C5A059";
+const mMat = () => new THREE.MeshBasicMaterial({ color: M_GOLD, depthTest: false, transparent: true, opacity: .95 });
+const fmtM = (d) => d.toFixed(2).replace(".", ",") + " m";
+function placeMeasureLabel() {
+  const o = $("#measureOut"), bar = document.querySelector(".vv-top");
+  o.style.top = Math.round((bar ? bar.getBoundingClientRect().bottom : 60) + 10) + "px";
+}
 function setMeasure(v) {
-  measuring = v; mPts = []; mGroup.clear(); $("#btnMeasure").setAttribute("aria-pressed", String(v)); canvas.classList.toggle("measuring", v);
-  const o = $("#measureOut"); o.hidden = !v; o.textContent = "Mètre : cliquez sur deux points";
+  measuring = v; mPts = []; mPreview = null; mGroup.clear(); $("#btnMeasure").setAttribute("aria-pressed", String(v)); canvas.classList.toggle("measuring", v);
+  const o = $("#measureOut"); o.hidden = !v; placeMeasureLabel(); o.textContent = "Mètre : cliquez sur un premier point (Échap pour quitter)";
+}
+function mDot(p) {
+  const g = new THREE.Group(); g.position.copy(p);
+  const s = new THREE.Mesh(new THREE.SphereGeometry(.06, 20, 14), mMat()); s.renderOrder = 999; g.add(s);
+  mGroup.add(g); return g;
+}
+function mSegment(a, b) {
+  const len = a.distanceTo(b); if (len < 1e-4) return null;
+  const c = new THREE.Mesh(new THREE.CylinderGeometry(.018, .018, len, 10), mMat()); c.renderOrder = 999;
+  c.position.copy(a).add(b).multiplyScalar(.5);
+  c.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize());
+  mGroup.add(c); return c;
 }
 function addMeasurePoint(p) {
   if (mPts.length === 2) { mPts = []; mGroup.clear(); }
-  mPts.push(p.clone());
-  const s = new THREE.Mesh(new THREE.SphereGeometry(.035, 12, 10), new THREE.MeshBasicMaterial({ color: "#C5A059" })); s.position.copy(p); mGroup.add(s);
+  if (mPreview) { mGroup.remove(mPreview); mPreview = null; }
+  mPts.push(p.clone()); mDot(p);
   if (mPts.length === 2) {
-    mGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(mPts), new THREE.LineBasicMaterial({ color: "#C5A059" })));
-    $("#measureOut").textContent = "Distance : " + mPts[0].distanceTo(mPts[1]).toFixed(2).replace(".", ",") + " m";
+    mSegment(mPts[0], mPts[1]);
+    $("#measureOut").textContent = "Distance : " + fmtM(mPts[0].distanceTo(mPts[1])) + " — cliquez pour une nouvelle mesure";
   } else $("#measureOut").textContent = "Mètre : cliquez sur le second point";
 }
+function previewMeasure(e) {
+  if (!measuring || mPts.length !== 1) return;
+  const rect = canvas.getBoundingClientRect();
+  ndc.set(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1); ray.setFromCamera(ndc, camera);
+  const hit = ray.intersectObjects(pickables.filter((m) => m.parent !== furniture || furniture.visible), false)[0];
+  if (mPreview) { mGroup.remove(mPreview); mPreview = null; }
+  if (!hit) return;
+  mPreview = mSegment(mPts[0], hit.point); if (mPreview) mPreview.material.opacity = .55;
+  $("#measureOut").textContent = "≈ " + fmtM(mPts[0].distanceTo(hit.point)) + " — cliquez pour valider";
+}
+addEventListener("resize", () => { if (measuring) placeMeasureLabel(); });
 
 /* ---------- Plan 2D ---------- */
 const mm = $("#minimap"), mg = mm.getContext("2d");
@@ -666,12 +696,12 @@ let drag = null;
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
 canvas.addEventListener("pointerdown", (e) => { canvas.setPointerCapture(e.pointerId); drag = { x: e.clientX, y: e.clientY, moved: 0, yaw: player.yaw, pitch: player.pitch }; });
 canvas.addEventListener("pointermove", (e) => {
-  if (!drag) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y; drag.moved = Math.max(drag.moved, Math.hypot(dx, dy));
+  if (!drag) { previewMeasure(e); return; } const dx = e.clientX - drag.x, dy = e.clientY - drag.y; drag.moved = Math.max(drag.moved, Math.hypot(dx, dy));
   if (drag.moved > 4) { tween = null; player.yaw = drag.yaw + dx * 0.0042; player.pitch = clamp(drag.pitch + dy * 0.0035, -1.2, 1.2); }
 });
 canvas.addEventListener("pointerup", (e) => {
   const d = drag; drag = null;
-  if (!d || d.moved > 4) return;
+  if (!d || d.moved > (measuring ? 10 : 4)) return;
   const rect = canvas.getBoundingClientRect();
   ndc.set(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1); ray.setFromCamera(ndc, camera);
   const targets = pickables.filter((m) => m.parent !== furniture || furniture.visible);

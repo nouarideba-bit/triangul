@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rendus du T4 témoin – Les Jardins d'Armance (exemple) · Triangul</title>
+<meta name="description" content="Rendus d'ambiance en ultra haute définition du T4 témoin : séjour, cuisine, suite parentale et terrasse. Images de synthèse non contractuelles.">
+<style>
+  :root{--brass:#C5A059;--ink:#1d2621;--sans:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;--serif:"Cormorant Garamond",Georgia,serif}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:#111;color:#fff;font-family:var(--sans)}
+  .gal{position:fixed;inset:0;overflow:hidden;margin:0}
+  .slide{position:absolute;inset:0;margin:0;opacity:0;transition:opacity 1.4s cubic-bezier(.4,0,.2,1)}
+  .slide.on{opacity:1}
+  .slide img{width:100%;height:100%;object-fit:cover;transform:scale(1.08);transition:transform 9s cubic-bezier(.25,.1,.25,1);will-change:transform}
+  .slide.on img{transform:scale(1)}
+  .slide::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.4) 0,rgba(0,0,0,0) 26%,rgba(0,0,0,0) 52%,rgba(0,0,0,.65) 100%);pointer-events:none}
+  .cap{position:absolute;left:clamp(20px,5vw,64px);bottom:clamp(96px,14vh,140px);z-index:2;max-width:min(560px,88vw)}
+  .cap small{display:block;letter-spacing:.18em;text-transform:uppercase;font-size:.75rem;color:var(--brass);font-weight:600;margin-bottom:8px}
+  .cap h2{font:500 clamp(2rem,5vw,3.6rem)/1.05 var(--serif);margin:0 0 10px}
+  .cap p{margin:0;font-size:clamp(.95rem,1.4vw,1.1rem);line-height:1.5;color:rgba(255,255,255,.9)}
+  .cap>*{opacity:0;transform:translateY(18px);transition:opacity .9s ease,transform .9s ease}
+  .slide.on .cap>*{opacity:1;transform:none}
+  .slide.on .cap small{transition-delay:.35s}.slide.on .cap h2{transition-delay:.5s}.slide.on .cap p{transition-delay:.65s}
+  header{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;justify-content:space-between;align-items:center;padding:18px clamp(20px,5vw,64px);gap:12px;flex-wrap:wrap}
+  header .t{font-weight:600;font-size:.95rem}
+  header .t span{display:block;font-weight:400;font-size:.8rem;opacity:.85}
+  .nav{display:flex;gap:8px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:10px 18px;font:600 .88rem var(--sans);text-decoration:none;border:1px solid rgba(255,255,255,.5);color:#fff;background:rgba(0,0,0,.28);backdrop-filter:blur(8px);cursor:pointer}
+  .btn.brass{background:var(--brass);border-color:var(--brass);color:var(--ink)}
+  .bar{position:fixed;left:clamp(20px,5vw,64px);right:clamp(20px,5vw,64px);bottom:30px;z-index:5;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .dots{display:flex;gap:10px;flex:1;min-width:200px}
+  .dot{flex:1;height:3px;background:rgba(255,255,255,.3);border:0;padding:0;cursor:pointer;position:relative;overflow:hidden;border-radius:2px}
+  .dot i{position:absolute;inset:0;background:#fff;transform:scaleX(0);transform-origin:left}
+  .dot.on i{animation:fill var(--dur,7s) linear forwards}
+  .dot.done i{transform:scaleX(1)}
+  .paused .dot.on i{animation-play-state:paused}
+  @keyframes fill{to{transform:scaleX(1)}}
+  .legal{position:fixed;right:clamp(20px,5vw,64px);bottom:8px;z-index:5;font-size:.7rem;opacity:.8;text-align:right}
+  @media (max-width:600px){.bar{bottom:44px;gap:8px}.dots{min-width:0}.bar .btn{padding:8px 13px}.legal{left:20px;right:20px;text-align:center}.cap{bottom:120px}}
+  @media (prefers-reduced-motion:reduce){.slide,.slide img,.cap>*{transition:none!important}.dot.on i{animation:none;transform:scaleX(1)}}
+</style>
+</head>
+<body>
+<header>
+  <div class="t">Les Jardins d'Armance — T4 témoin (lot B31)<span>82,4 m² · 3e étage · terrasse 22 m² sud-ouest · exemple fictif</span></div>
+  <nav class="nav">
+    <a class="btn" href="visite-virtuelle.html">Visite 3D</a>
+    <a class="btn brass" href="programme-exemple.html?lot=B31&amp;typo=T4#rdv">Prendre rendez-vous</a>
+  </nav>
+</header>
+
+<main class="gal" aria-roledescription="carrousel" aria-label="Rendus du T4 témoin">
+  <figure class="slide on" aria-label="1 sur 4">
+    <img src="assets/img/rendus/t4-sejour.jpg" width="3840" height="2160" alt="Séjour avec canapé d'angle en lin, parquet chêne en point de Hongrie et baie vitrée ouvrant sur la terrasse, vue sur les toits au coucher du soleil" fetchpriority="high">
+    <figcaption class="cap"><small>Pièce de vie</small><h2>Le séjour</h2><p>Un grand volume ouvert sur la terrasse : depuis le 3e étage, la lumière du soir entre jusqu'au fond de la pièce.</p></figcaption>
+  </figure>
+  <figure class="slide" aria-label="2 sur 4">
+    <img src="assets/img/rendus/t4-cuisine.jpg" width="3840" height="2160" alt="Cuisine vert olive avec îlot central, plan de travail en pierre claire et suspensions" loading="lazy">
+    <figcaption class="cap"><small>Cuisine ouverte</small><h2>La cuisine</h2><p>Îlot central, plan de travail en pierre claire et façades mates : une cuisine pensée pour recevoir.</p></figcaption>
+  </figure>
+  <figure class="slide" aria-label="3 sur 4">
+    <img src="assets/img/rendus/t4-suite.jpg" width="3840" height="2160" alt="Suite parentale aux tons crème avec dressing vitré éclairé" loading="lazy">
+    <figcaption class="cap"><small>Espace nuit</small><h2>La suite parentale</h2><p>Une chambre au calme, prolongée par son dressing vitré.</p></figcaption>
+  </figure>
+  <figure class="slide" aria-label="4 sur 4">
+    <img src="assets/img/rendus/t4-terrasse.jpg" width="3840" height="2160" alt="Terrasse en bois avec salon d'extérieur, garde-corps en verre et vue dégagée sur les toits au coucher du soleil" loading="lazy">
+    <figcaption class="cap"><small>Extérieur · 22 m²</small><h2>La terrasse</h2><p>Une vraie pièce en plus, orientée sud-ouest, avec une vue dégagée pour profiter du soleil jusqu'en fin de journée.</p></figcaption>
+  </figure>
+</main>
+
+<div class="bar">
+  <div class="dots" id="dots"></div>
+  <button class="btn" id="prev" type="button" aria-label="Image précédente">‹</button>
+  <button class="btn" id="play" type="button" aria-label="Pause">Pause</button>
+  <button class="btn" id="next" type="button" aria-label="Image suivante">›</button>
+</div>
+<div class="legal">Images de synthèse d'ambiance, non contractuelles. Exemple fictif. Mobilier et décoration non fournis.</div>
+
+<script>
+(() => {
+  const DUR = 7000;
+  const slides = [...document.querySelectorAll(".slide")];
+  const dotsBox = document.getElementById("dots");
+  document.documentElement.style.setProperty("--dur", DUR / 1000 + "s");
+  const dots = slides.map((_, i) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "dot"; b.setAttribute("aria-label", "Voir l'image " + (i + 1));
+    b.innerHTML = "<i></i>"; b.onclick = () => go(i); dotsBox.appendChild(b); return b;
+  });
+  let cur = 0, timer = null, paused = false;
+  function go(i) {
+    cur = (i + slides.length) % slides.length;
+    slides.forEach((s, k) => { s.classList.toggle("on", k === cur); s.setAttribute("aria-hidden", String(k !== cur)); });
+    dots.forEach((d, k) => { d.classList.remove("on", "done"); void d.offsetWidth; if (k < cur) d.classList.add("done"); if (k === cur) d.classList.add("on"); });
+    slides[(cur + 1) % slides.length].querySelector("img").loading = "eager";
+    schedule();
+  }
+  function schedule() { clearTimeout(timer); if (!paused && !document.hidden) timer = setTimeout(() => go(cur + 1), DUR); }
+  const play = document.getElementById("play");
+  play.onclick = () => { paused = !paused; document.body.classList.toggle("paused", paused); play.textContent = paused ? "Lecture" : "Pause"; play.setAttribute("aria-label", play.textContent); schedule(); };
+  document.getElementById("prev").onclick = () => go(cur - 1);
+  document.getElementById("next").onclick = () => go(cur + 1);
+  addEventListener("keydown", (e) => { if (e.key === "ArrowRight") go(cur + 1); if (e.key === "ArrowLeft") go(cur - 1); if (e.key === " " && e.target === document.body) { e.preventDefault(); play.click(); } });
+  let sx = null;
+  addEventListener("touchstart", (e) => (sx = e.touches[0].clientX), { passive: true });
+  addEventListener("touchend", (e) => { if (sx === null) return; const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 40) go(cur + (dx < 0 ? 1 : -1)); sx = null; });
+  document.addEventListener("visibilitychange", schedule);
+  go(0);
+})();
+</script>
+</body>
+</html>

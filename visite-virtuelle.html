@@ -63,7 +63,7 @@
   .tag.confirmer{background:#F6DADA;color:#7A2B2B}
   .vv-caption{position:fixed;left:50%;transform:translateX(-50%);bottom:178px;z-index:6;max-width:min(680px,calc(100% - 24px));background:rgba(31,42,36,.86);color:#fff;border-radius:10px;padding:10px 14px;font-size:.95rem;line-height:1.4;text-align:center}
   .vv-caption[hidden],.vv-measure[hidden],.vv-panel[hidden]{display:none}
-  .vv-measure{position:fixed;left:50%;top:72px;transform:translateX(-50%);z-index:6;background:var(--sage);color:#fff;border-radius:999px;padding:7px 14px;font:600 .85rem var(--sans)}
+  .vv-measure{position:fixed;left:50%;top:72px;pointer-events:none;max-width:calc(100% - 24px);text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.18);transform:translateX(-50%);z-index:6;background:var(--sage);color:#fff;border-radius:999px;padding:7px 14px;font:600 .85rem var(--sans)}
   .vv-pad{position:fixed;left:16px;bottom:190px;z-index:5;display:none;grid-template-columns:repeat(3,46px);grid-template-rows:repeat(2,46px);gap:6px}
   .vv-pad button{border:1px solid var(--line);background:rgba(249,248,246,.9);border-radius:12px;font-size:1.1rem;color:var(--sage);touch-action:none}
   .touch .vv-pad{display:grid}
@@ -109,6 +109,7 @@
     <button type="button" class="vv-btn" id="btnGuide">Visite guidée</button>
     <button type="button" class="vv-btn" id="btnMap" aria-pressed="false">Plan</button>
     <button type="button" class="vv-btn" id="btnFull">Plein écran</button>
+    <a class="vv-btn brass" href="galerie-t4.html">Rendus HD</a>
   </div>
 </div>
 
