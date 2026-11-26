@@ -22,17 +22,62 @@ SITE = SRC.parent
 CONFIG = {
     "contact": os.environ.get("TRIANGUL_CONTACT", ""),  # obligatoire : adresse de contact du site
     "base_url": "https://triangul.fr/",      # adresse définitive du site
-    "preview": True,                         # bandeau « version de présentation »
+    "preview": True,                         # bandeau « version de présentation » ; False masque aussi les programmes « exemple »
+    # Téléphone commercial affiché partout (lien cliquable). Vide = aucun numéro affiché.
+    "tel": os.environ.get("TRIANGUL_TEL", "06 66 58 20 03"),
+    # Service qui reçoit les formulaires et les transmet par e-mail (envoi direct depuis le site).
+    # "formsubmit" (gratuit, sans compte) : le premier envoi déclenche un e-mail d'activation
+    # à l'adresse de contact. Vide = ancien fonctionnement par la messagerie du visiteur.
+    "form_endpoint": os.environ.get("TRIANGUL_FORM_ENDPOINT", "formsubmit"),
+    # Mesure d'audience sans cookie (Plausible) : domaine déclaré chez Plausible. Vide = désactivée.
+    "plausible": os.environ.get("TRIANGUL_PLAUSIBLE", ""),
 }
 
 NAV = [
     ("programmes.html", "Programmes", "programmes"),
+    ("savoir-faire.html", "Qui sommes-nous", "savoir-faire"),
     ("realisations.html", "Réalisations", "realisations"),
-    ("savoir-faire.html", "Savoir-faire", "savoir-faire"),
     ("vendre-votre-terrain.html", "Vendre votre terrain", "terrain"),
-    ("actualites.html", "Actualités", "actualites"),
-    ("espace-partenaires/index.html", "Espace partenaires", "espace"),
+    ("actualites.html", "Conseils", "actualites"),
 ]
+
+
+def tel_href():
+    t = re.sub(r"[^\d+]", "", CONFIG["tel"])
+    if t.startswith("0"):
+        t = "+33" + t[1:]
+    return "tel:" + t
+
+
+def form_endpoint():
+    e = CONFIG["form_endpoint"]
+    if e == "formsubmit":
+        return "https://formsubmit.co/ajax/" + CONFIG["contact"]
+    return e
+
+
+PHONE_SVG = ('<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" '
+             'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>')
+
+
+def mobile_cta(meta, root):
+    """Barre d'actions fixe en bas d'écran sur mobile, adaptée à la page."""
+    if meta.get("espace") or meta.get("no_cta"):
+        return ""
+    items = []
+    if meta.get("cta") == "programme":
+        items.append('<a href="#brochure" data-track="cta_brochure">Brochure</a>')
+        items.append('<a href="#rdv" data-track="cta_rdv">Rendez-vous</a>')
+    elif meta.get("nav") == "terrain":
+        items.append('<a href="#etude" data-track="cta_etude">Étude gratuite</a>')
+    else:
+        items.append(f'<a href="{root}programmes.html">Programmes</a>')
+        items.append(f'<a href="{root}contact.html#rdv" data-track="cta_rdv">Rendez-vous</a>')
+    if CONFIG["tel"]:
+        items.append(f'<a class="main" href="{tel_href()}" data-track="clic_telephone">{PHONE_SVG}Appeler</a>')
+    else:
+        items.append(f'<a class="main" href="{root}contact.html#rappel" data-track="cta_rappel">{PHONE_SVG}Être rappelé</a>')
+    return f'<nav class="mobile-cta" aria-label="Actions rapides">{"".join(items)}</nav>'
 
 PREVIEW_BAR = ('<div class="preview-bar"><strong>Version de présentation.</strong> '
                'Les programmes affichés sont des exemples fictifs et les visuels des images de synthèse non contractuelles.</div>')
@@ -43,7 +88,9 @@ def header(meta, root):
     for href, label, key in NAV:
         cur = ' aria-current="page"' if meta.get("nav") == key else ""
         links.append(f'<a href="{root}{href}"{cur}>{label}</a>')
-    links.append(f'<a class="btn btn-sage" href="{root}contact.html">Nous contacter</a>')
+    if CONFIG["tel"]:
+        links.append(f'<a class="nav-tel" href="{tel_href()}" data-track="clic_telephone">{PHONE_SVG}{html.escape(CONFIG["tel"])}</a>')
+    links.append(f'<a class="btn btn-sage" href="{root}contact.html#rdv" data-track="cta_rdv">Prendre rendez-vous</a>')
     bar = PREVIEW_BAR if CONFIG["preview"] else ""
     return f"""<a class="skip" href="#contenu">Aller au contenu</a>
 <header class="site-header">
@@ -98,8 +145,9 @@ def footer(root):
         <ul>
           <li>TRIANGUL SAS</li>
           <li>51, rue de Ponthieu<br>75008 Paris</li>
+          {f'<li><a href="{tel_href()}" data-track="clic_telephone">{html.escape(CONFIG["tel"])}</a></li>' if CONFIG["tel"] else ""}
           <li><a href="mailto:{c}">{c}</a></li>
-          <li><a href="{root}contact.html">Formulaire de contact</a></li>
+          <li><a href="{root}contact.html#rappel">Être rappelé</a></li>
         </ul>
       </div>
     </div>
@@ -123,6 +171,7 @@ def org_ld():
         "address": {"@type": "PostalAddress", "streetAddress": "51, rue de Ponthieu", "postalCode": "75008",
                     "addressLocality": "Paris", "addressCountry": "FR"},
         "email": CONFIG["contact"],
+        **({"telephone": tel_href()[4:]} if CONFIG["tel"] else {}),
     }
 
 
@@ -131,7 +180,8 @@ def render(meta, body):
     # 404 : chemins absolus, car la page peut être servie à n'importe quelle profondeur
     root = meta.get("abs_root") or "../" * out.count("/")
     body = (body.replace("{{root}}", root).replace("{{contact}}", CONFIG["contact"])
-                .replace("{{year}}", str(datetime.date.today().year)))
+                .replace("{{year}}", str(datetime.date.today().year))
+                .replace("{{tel}}", html.escape(CONFIG["tel"])).replace("{{tel_href}}", tel_href()))
     title = meta["title"] if meta.get("title_full") else f'{meta["title"]} | TRIANGUL, promoteur immobilier'
     canon = CONFIG["base_url"] + ("" if out == "index.html" else out)
     robots = '<meta name="robots" content="noindex, nofollow">' if meta.get("noindex") else ""
@@ -140,10 +190,16 @@ def render(meta, body):
     scripts = [f'<script src="{root}assets/js/programmes-data.js"></script>', f'<script src="{root}assets/js/main.js"></script>']
     if meta.get("espace"):
         scripts += [f'<script src="{root}assets/js/vendor/supabase.js"></script>', f'<script src="{root}assets/js/espace.js"></script>']
-    attrs = f'class="{meta.get("body_class", "")}" data-root="{root}" data-contact="{CONFIG["contact"]}"'
+    attrs = (f'class="{meta.get("body_class", "")}" data-root="{root}" data-contact="{CONFIG["contact"]}"'
+             f' data-endpoint="{html.escape(form_endpoint())}" data-preview="{"1" if CONFIG["preview"] else "0"}"'
+             f' data-tel="{html.escape(CONFIG["tel"])}"')
     if meta.get("espace"):
         attrs += f' data-espace="{meta["espace"]}"'
     desc = html.escape(meta["description"], quote=True)
+    analytics = ""
+    if CONFIG["plausible"] and not meta.get("noindex"):
+        analytics = (f'<script defer data-domain="{html.escape(CONFIG["plausible"])}" src="https://plausible.io/js/script.tagged-events.js"></script>\n'
+                     '<script>window.plausible=window.plausible||function(){(window.plausible.q=window.plausible.q||[]).push(arguments)}</script>')
     og_img = CONFIG["base_url"] + meta.get("image", "assets/img/photos/hero.jpg")
     return f"""<!doctype html>
 <html lang="fr">
@@ -168,6 +224,7 @@ def render(meta, body):
 <link rel="preload" href="{root}assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="{root}assets/css/style.css">
 {ld}
+{analytics}
 </head>
 <body {attrs}>
 {header(meta, root)}
@@ -175,6 +232,7 @@ def render(meta, body):
 {body.strip()}
 </main>
 {footer(root)}
+{mobile_cta(meta, root)}
 {chr(10).join(scripts)}
 </body>
 </html>
