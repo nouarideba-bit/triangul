@@ -27,6 +27,11 @@ Les pages sont générées à partir des sources de `_src/pages/` :
 TRIANGUL_CONTACT=adresse@triangul.fr python3 _src/build.py   # régénère toutes les pages avec l'adresse de contact
 ```
 
+- **Téléphone, formulaires, mesure d'audience** : `CONFIG` dans `_src/build.py` (ou variables `TRIANGUL_TEL`,
+  `TRIANGUL_FORM_ENDPOINT`, `TRIANGUL_PLAUSIBLE`). Les formulaires sont envoyés directement par FormSubmit vers l'adresse
+  de contact ; **le tout premier envoi déclenche un e-mail d'activation** à cliquer dans la boîte de réception.
+  Événements suivis : `demande_envoyee`, `clic_telephone`, `cta_rdv`, `cta_brochure`, `clic_lot`, `sim_programmes`, `sim_rappel`.
+- **Mise en ligne définitive** : passer `CONFIG["preview"]` à `False` ; les programmes `exemple: true` ne sont alors plus affichés.
 - **Programmes** : modifier `assets/js/programmes-data.js` (un bloc par programme ; `exemple: true` affiche le badge « Exemple »).
 - **Bandeau « version de présentation »** : `CONFIG["preview"]` dans `_src/build.py`.
 - **Logo** : `assets/img/logo-triangul.svg` (complet), `logo-mark.svg` (pictogramme), `favicon.svg`.

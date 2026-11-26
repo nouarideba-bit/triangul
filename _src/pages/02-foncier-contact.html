@@ -91,7 +91,7 @@
         <li><span><strong>Un interlocuteur unique</strong> du premier échange jusqu'à la vente.</span></li>
       </ul>
     </div>
-    <form class="form-card reveal" data-mailto="Demande d'étude de faisabilité">
+    <form class="form-card reveal" data-mailto="Demande d'étude de faisabilité" data-form="terrain" data-merci="Merci, votre demande d'étude est bien envoyée.">
       <div class="field-row">
         <div class="field"><label for="t-nom">Nom *</label><input id="t-nom" name="nom" autocomplete="name" required></div>
         <div class="field"><label for="t-tel">Téléphone *</label><input id="t-tel" name="tel" type="tel" autocomplete="tel" required></div>
@@ -116,15 +116,48 @@
   <div class="wrap">
     <p class="crumbs"><a href="{{root}}index.html">Accueil</a> / Contact</p>
     <h1>Parlons de votre projet</h1>
-    <p class="lead">Acquéreur, propriétaire, élu, bailleur ou partenaire : écrivez-nous, nous vous répondons personnellement.</p>
+    <p class="lead">Acquéreur, propriétaire, élu, bailleur ou partenaire : appelez-nous, prenez rendez-vous ou écrivez-nous. Nous vous répondons personnellement sous 24 heures ouvrées.</p>
+    <div class="btn-row" style="margin-top:24px">
+      <a class="btn btn-brass" href="{{tel_href}}" data-track="clic_telephone">Appeler le {{tel}}</a>
+      <a class="btn btn-ghost" href="#rdv" data-track="cta_rdv">Prendre rendez-vous</a>
+    </div>
   </div>
 </section>
 
-<section class="section">
+<section class="section tight" id="rdv">
   <div class="wrap split" style="align-items:start">
-    <form class="form-card reveal" data-mailto="Contact depuis le site">
+    <div class="reveal" id="rappel">
+      <p class="eyebrow">Rendez-vous ou rappel</p>
+      <h2>Parlons de votre projet de vive voix</h2>
+      <p class="lead">En bulle de vente, à nos bureaux du 8<sup>e</sup> arrondissement ou en visio : choisissez la formule et le créneau qui vous conviennent. Nous vous appelons pour confirmer.</p>
+      <ul class="checklist">
+        <li><span><strong>Sans engagement</strong> : plans, prix et disponibilités présentés en toute transparence.</span></li>
+        <li><span><strong>Un seul interlocuteur</strong> qui suit votre dossier jusqu'à la remise des clés.</span></li>
+      </ul>
+    </div>
+    <form class="form-card reveal" data-mailto="Demande de rendez-vous / rappel" data-form="rdv" data-merci="Merci, nous vous appelons très vite pour convenir du rendez-vous.">
+      <div class="field-row">
+        <div class="field"><label for="r-nom">Nom *</label><input id="r-nom" name="nom" autocomplete="name" required></div>
+        <div class="field"><label for="r-tel">Téléphone *</label><input id="r-tel" name="tel" type="tel" autocomplete="tel" required></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label for="r-type">Je souhaite</label><select id="r-type" name="type"><option>Être rappelé</option><option>Un rendez-vous en bulle de vente</option><option>Un rendez-vous à vos bureaux</option><option>Un rendez-vous en visio</option></select></div>
+        <div class="field"><label for="r-creneau">Créneau préféré</label><select id="r-creneau" name="creneau"><option>Dès que possible</option><option>En semaine, matin</option><option>En semaine, midi</option><option>En semaine, fin de journée</option><option>Samedi</option></select></div>
+      </div>
+      <div class="field"><label for="r-objet">Votre projet</label><select id="r-objet" name="objet"><option>Acheter pour y vivre</option><option>Investir</option><option>Étudier mon financement</option><option>Vendre un terrain</option><option>Autre</option></select></div>
+      <div class="field"><label for="r-message">Précisions (programme, budget…)</label><textarea id="r-message" name="message" rows="3"></textarea></div>
+      <label class="check"><input type="checkbox" required> J'accepte que TRIANGUL utilise ces informations pour me recontacter.</label>
+      <button class="btn btn-sage" type="submit">Être recontacté</button>
+      <p class="form-status" role="status"></p>
+    </form>
+  </div>
+</section>
+
+<section class="section alt">
+  <div class="wrap split" style="align-items:start">
+    <form class="form-card reveal" data-mailto="Contact depuis le site" data-form="contact">
       <div class="field"><label for="c-objet">Votre demande concerne *</label>
-        <select id="c-objet" name="objet" required><option>L'achat d'un logement</option><option>Un investissement</option><option>La vente d'un terrain</option><option>Une collectivité ou un bailleur social</option><option>Un partenariat</option><option>Un accès à l'espace partenaires</option><option>Autre</option></select></div>
+        <select id="c-objet" name="objet" required><option>L'achat d'un logement</option><option>Un investissement</option><option>Étudier mon financement</option><option>La vente d'un terrain</option><option>Une collectivité ou un bailleur social</option><option>Un partenariat</option><option>Un accès à l'espace partenaires</option><option>Autre</option></select></div>
       <div class="field-row">
         <div class="field"><label for="c-nom">Nom *</label><input id="c-nom" name="nom" autocomplete="name" required></div>
         <div class="field"><label for="c-societe">Société ou collectivité</label><input id="c-societe" name="societe" autocomplete="organization"></div>
@@ -142,6 +175,7 @@
       <h2>Nos coordonnées</h2>
       <ul class="contact-list">
         <li><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span><small>Siège</small>TRIANGUL SAS<br>51, rue de Ponthieu, 75008 Paris</span></li>
+        <li><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></span><span><small>Téléphone</small><a href="{{tel_href}}" data-track="clic_telephone">{{tel}}</a></span></li>
         <li><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span><span><small>E-mail</small><a href="mailto:{{contact}}">{{contact}}</a></span></li>
         <li><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><span><small>Associés et partenaires</small><a href="{{root}}espace-partenaires/index.html">Accéder à l'espace partenaires</a></span></li>
       </ul>
@@ -174,12 +208,12 @@
     <p>Les visuels des programmes sont des images de synthèse non contractuelles. Les surfaces, prix et dates de livraison sont donnés à titre indicatif et peuvent évoluer. Pendant la phase de présentation du site, certains programmes affichés sont des exemples fictifs, signalés comme tels.</p>
 
     <h2>Données personnelles</h2>
-    <p>Les formulaires du site n'enregistrent aucune donnée sur nos serveurs : ils préparent un message que vous envoyez vous-même depuis votre messagerie. Les informations que vous nous transmettez servent uniquement à répondre à votre demande ; elles ne sont ni vendues ni cédées à des tiers et sont conservées le temps nécessaire au traitement de votre demande, puis au plus trois ans après notre dernier échange.</p>
+    <p>Les formulaires du site transmettent votre demande par e-mail à TRIANGUL par l'intermédiaire du service FormSubmit (formsubmit.co), qui agit comme simple relais d'acheminement. Les informations que vous nous transmettez servent uniquement à répondre à votre demande ; elles ne sont ni vendues ni cédées à des tiers et sont conservées le temps nécessaire au traitement de votre demande, puis au plus trois ans après notre dernier échange.</p>
     <p>Le diagnostic foncier express transmet l'adresse saisie aux services publics de l'IGN (Géoplateforme, API Carto) et à Géorisques pour effectuer la recherche ; TRIANGUL ne la conserve pas.</p>
     <p>Conformément au règlement général sur la protection des données (RGPD) et à la loi Informatique et Libertés, vous disposez d'un droit d'accès, de rectification, d'effacement, d'opposition et de limitation sur vos données. Pour l'exercer, écrivez à <a href="mailto:{{contact}}">{{contact}}</a>. Vous pouvez aussi saisir la CNIL (www.cnil.fr).</p>
 
     <h2>Cookies</h2>
-    <p>Ce site n'utilise aucun cookie publicitaire ni outil de mesure d'audience. Les polices de caractères sont hébergées sur le site lui-même. Seul l'espace partenaires conserve, dans votre navigateur, les informations techniques nécessaires à votre connexion.</p>
+    <p>Ce site n'utilise aucun cookie publicitaire. Si une mesure d'audience est activée, elle repose sur un outil sans cookie qui ne collecte aucune donnée personnelle et ne permet pas de vous identifier. Les polices de caractères sont hébergées sur le site lui-même. Seul l'espace partenaires conserve, dans votre navigateur, les informations techniques nécessaires à votre connexion.</p>
 
     <h2>Propriété intellectuelle</h2>
     <p>Les textes, logos, illustrations et éléments graphiques de ce site sont la propriété de TRIANGUL SAS. Toute reproduction sans autorisation est interdite. Polices de caractères Cormorant Garamond et Inter, sous licence SIL Open Font License.</p>

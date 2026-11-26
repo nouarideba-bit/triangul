@@ -21,8 +21,9 @@
 <link rel="preload" href="assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/style.css">
 
+
 </head>
-<body class="" data-root="" data-contact="a.deba@triangul.fr">
+<body class="" data-root="" data-contact="a.deba@triangul.fr" data-endpoint="https://formsubmit.co/ajax/a.deba@triangul.fr" data-preview="1" data-tel="06 66 58 20 03">
 <a class="skip" href="#contenu">Aller au contenu</a>
 <header class="site-header">
   <div class="preview-bar"><strong>Version de présentation.</strong> Les programmes affichés sont des exemples fictifs et les visuels des images de synthèse non contractuelles.</div>
@@ -34,7 +35,7 @@
     </a>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav" aria-label="Ouvrir le menu"><span></span><span></span><span></span></button>
     <nav id="nav" class="nav" aria-label="Navigation principale">
-      <a href="programmes.html" aria-current="page">Programmes</a><a href="realisations.html">Réalisations</a><a href="savoir-faire.html">Savoir-faire</a><a href="vendre-votre-terrain.html">Vendre votre terrain</a><a href="actualites.html">Actualités</a><a href="espace-partenaires/index.html">Espace partenaires</a><a class="btn btn-sage" href="contact.html">Nous contacter</a>
+      <a href="programmes.html" aria-current="page">Programmes</a><a href="savoir-faire.html">Qui sommes-nous</a><a href="realisations.html">Réalisations</a><a href="vendre-votre-terrain.html">Vendre votre terrain</a><a href="actualites.html">Conseils</a><a class="nav-tel" href="tel:+33666582003" data-track="clic_telephone"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>06 66 58 20 03</a><a class="btn btn-sage" href="contact.html#rdv" data-track="cta_rdv">Prendre rendez-vous</a>
     </nav>
   </div>
 </header>
@@ -46,6 +47,10 @@
     <div class="badges" style="position:static;margin-bottom:16px"><span class="badge lancement">Lancement commercial</span><span class="badge exemple" style="margin-left:0">Exemple fictif</span></div>
     <h1>Les Jardins d'Armance</h1>
     <p class="lead">Programme neuf en Essonne : 32 appartements du T1 au T4, ouverts sur des balcons, des terrasses et des jardins privatifs.</p>
+    <div class="btn-row" style="margin-top:24px">
+      <a class="btn btn-brass" href="#brochure" data-track="cta_brochure">Recevoir la brochure et les plans</a>
+      <a class="btn btn-ghost" href="#rdv" data-track="cta_rdv">Prendre rendez-vous</a>
+    </div>
   </div>
 </section>
 
@@ -58,6 +63,7 @@
       <div><small>Livraison prévisionnelle</small><strong>4e trimestre 2028</strong></div>
       <div><small>Prix</small><strong>À partir de 219 000 €</strong></div>
     </div>
+    <p class="facts-note"><strong>8 lots disponibles</strong> · prix TTC, TVA à 20 %, stationnement en option · <a href="#lots">Voir la grille des lots</a></p>
   </div>
 </section>
 
@@ -93,6 +99,26 @@
           </tbody>
         </table>
       </div>
+      <h2 id="lots">Les lots disponibles</h2>
+      <p>Grille indicative mise à jour régulièrement. Un lot vous intéresse ? Un conseiller vous confirme sa disponibilité et vous envoie son plan.</p>
+      <div class="table-scroll">
+        <table class="lots">
+          <thead><tr><th>Lot</th><th>Type</th><th>Étage</th><th>Surface</th><th>Exposition</th><th>Extérieur</th><th>Prix TTC</th><th>Statut</th><th><span class="sr-only">Action</span></th></tr></thead>
+          <tbody>
+            <tr data-typo="T1"><td><strong>A01</strong></td><td>T1</td><td>RDC</td><td>30,2 m²</td><td>Sud</td><td>Jardin 38 m²</td><td>219 000 €</td><td><span class="lot-status dispo">Disponible</span></td><td><a class="link-arrow" href="#rdv" data-prefill-lot="A01" data-typo="T1">Choisir →</a></td></tr>
+            <tr data-typo="T2"><td><strong>A12</strong></td><td>T2</td><td>1er</td><td>45,4 m²</td><td>Sud-ouest</td><td>Balcon 8 m²</td><td>279 000 €</td><td><span class="lot-status dispo">Disponible</span></td><td><a class="link-arrow" href="#rdv" data-prefill-lot="A12" data-typo="T2">Choisir →</a></td></tr>
+            <tr data-typo="T2"><td><strong>A14</strong></td><td>T2</td><td>1er</td><td>46,1 m²</td><td>Est</td><td>Balcon 7 m²</td><td>284 000 €</td><td><span class="lot-status option">Sous option</span></td><td>–</td></tr>
+            <tr data-typo="T3"><td><strong>A23</strong></td><td>T3</td><td>2e</td><td>64,0 m²</td><td>Sud</td><td>Terrasse 14 m²</td><td>349 000 €</td><td><span class="lot-status dispo">Disponible</span></td><td><a class="link-arrow" href="#rdv" data-prefill-lot="A23" data-typo="T3">Choisir →</a></td></tr>
+            <tr data-typo="T3"><td><strong>A25</strong></td><td>T3</td><td>2e</td><td>65,3 m²</td><td>Ouest</td><td>Balcon 10 m²</td><td>356 000 €</td><td><span class="lot-status dispo">Disponible</span></td><td><a class="link-arrow" href="#rdv" data-prefill-lot="A25" data-typo="T3">Choisir →</a></td></tr>
+            <tr data-typo="T3"><td><strong>B02</strong></td><td>T3</td><td>RDC</td><td>63,8 m²</td><td>Sud-est</td><td>Jardin 52 m²</td><td>362 000 €</td><td><span class="lot-status dispo">Disponible</span></td><td><a class="link-arrow" href="#rdv" data-prefill-lot="B02" data-typo="T3">Choisir →</a></td></tr>
+            <tr data-typo="T2"><td><strong>B21</strong></td><td>T2</td><td>2e</td><td>44,9 m²</td><td>Nord-ouest</td><td>Balcon 6 m²</td><td>276 000 €</td><td><span class="lot-status reserve">Réservé</span></td><td>–</td></tr>
+            <tr data-typo="T4"><td><strong>B31</strong></td><td>T4</td><td>3e</td><td>82,4 m²</td><td>Sud-ouest</td><td>Terrasse 22 m²</td><td>419 000 €</td><td><span class="lot-status dispo">Disponible</span></td><td><a class="link-arrow" href="#rdv" data-prefill-lot="B31" data-typo="T4">Choisir →</a></td></tr>
+            <tr data-typo="T4"><td><strong>B33</strong></td><td>T4</td><td>3e</td><td>84,0 m²</td><td>Est-ouest</td><td>Terrasse 18 m²</td><td>428 000 €</td><td><span class="lot-status dispo">Disponible</span></td><td><a class="link-arrow" href="#rdv" data-prefill-lot="B33" data-typo="T4">Choisir →</a></td></tr>
+            <tr data-typo="T3"><td><strong>B34</strong></td><td>T3</td><td>3e</td><td>66,2 m²</td><td>Sud</td><td>Terrasse 16 m²</td><td>371 000 €</td><td><span class="lot-status dispo">Disponible</span></td><td><a class="link-arrow" href="#rdv" data-prefill-lot="B34" data-typo="T3">Choisir →</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:.8rem;color:var(--muted)">Surfaces habitables indicatives, prix hors stationnement. Exemple fictif.</p>
       <h3>Prestations</h3>
       <ul>
         <li>Conformité à la réglementation environnementale RE2020, chauffage économe et bonne isolation.</li>
@@ -109,19 +135,60 @@
         <li><strong>Moins de charges :</strong> un logement économe en énergie, sans gros travaux à prévoir.</li>
       </ul>
       <p>Pour un <strong>investissement immobilier en Essonne</strong>, la demande locative des familles et des jeunes actifs, alliée à des logements neufs sans travaux, en fait une option à étudier avec votre conseiller.</p>
+
+      <h2>Votre achat sur plan, étape par étape</h2>
+      <ol class="vefa-steps">
+        <li><strong>Rendez-vous et choix du lot</strong> : plans, prestations et prix, en bulle de vente ou en visio.</li>
+        <li><strong>Contrat de réservation</strong> : dépôt de garantie encadré et délai de rétractation de 10 jours.</li>
+        <li><strong>Financement</strong> : obtention de votre prêt, avec un courtier partenaire si vous le souhaitez.</li>
+        <li><strong>Acte authentique chez le notaire</strong> : vous devenez propriétaire au fur et à mesure de la construction.</li>
+        <li><strong>Appels de fonds</strong> : vous payez selon l'avancement du chantier, dans les plafonds fixés par la loi.</li>
+        <li><strong>Livraison et remise des clés</strong> : visite de livraison, levée des réserves et garanties.</li>
+      </ol>
+      <p><a href="actualites/acheter-sur-plan-vefa.html">Lire notre guide complet de l'achat sur plan →</a></p>
+
+      <section id="rdv" class="rdv-block">
+        <h2 style="margin-top:0">Prendre rendez-vous</h2>
+        <p>Un conseiller vous présente le programme, les plans et les lots disponibles. Indiquez vos disponibilités, nous vous confirmons le rendez-vous.</p>
+        <form class="form-card" data-mailto="Rendez-vous – Les Jardins d'Armance" data-form="rdv" data-merci="Merci, nous vous appelons pour confirmer votre rendez-vous.">
+          <div class="field-row">
+            <div class="field"><label for="r-nom">Nom *</label><input id="r-nom" name="nom" autocomplete="name" required></div>
+            <div class="field"><label for="r-tel">Téléphone *</label><input id="r-tel" name="tel" type="tel" autocomplete="tel" required></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label for="r-type">Type de rendez-vous</label><select id="r-type" name="type"><option>En bulle de vente</option><option>En visio</option><option>À nos bureaux (Paris 8e)</option><option>Être rappelé</option></select></div>
+            <div class="field"><label for="r-creneau">Créneau préféré</label><select id="r-creneau" name="creneau"><option>Indifférent</option><option>En semaine, matin</option><option>En semaine, midi</option><option>En semaine, fin de journée</option><option>Samedi</option></select></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label for="r-typo">Typologie</label><select id="r-typo" name="typo"><option>Indifférente</option><option>T1</option><option>T2</option><option>T3</option><option>T4</option></select></div>
+            <div class="field"><label for="r-lot">Lot (si vous en avez repéré un)</label><input id="r-lot" name="lot" placeholder="Ex. A23"></div>
+          </div>
+          <label class="check"><input type="checkbox" required> J'accepte d'être recontacté au sujet de ce programme.</label>
+          <button class="btn btn-sage" type="submit">Demander mon rendez-vous</button>
+          <p class="form-status" role="status"></p>
+        </form>
+      </section>
     </div>
-    <aside class="sticky-aside">
-      <form class="form-card" data-mailto="Demande de brochure – Les Jardins d'Armance">
+    <aside class="sticky-aside" id="brochure">
+      <form class="form-card" data-mailto="Demande de brochure – Les Jardins d'Armance" data-form="brochure" data-merci="Merci ! Nous vous envoyons la brochure et les plans sous 24 heures ouvrées.">
         <h3>Recevez la brochure et les plans</h3>
         <p class="form-note" style="margin:0 0 16px">Plans des appartements, prix et disponibilités.</p>
         <div class="field"><label for="b-nom">Nom *</label><input id="b-nom" name="nom" autocomplete="name" required></div>
         <div class="field"><label for="b-email">E-mail *</label><input id="b-email" name="email" type="email" autocomplete="email" required></div>
         <div class="field"><label for="b-tel">Téléphone</label><input id="b-tel" name="tel" type="tel" autocomplete="tel"></div>
-        <div class="field"><label for="b-typo">Typologie souhaitée</label><select id="b-typo" name="typo"><option>T1</option><option>T2</option><option selected>T3</option><option>T4</option></select></div>
+        <div class="field-row">
+          <div class="field"><label for="b-typo">Typologie</label><select id="b-typo" name="typo"><option>T1</option><option>T2</option><option selected>T3</option><option>T4</option></select></div>
+          <div class="field"><label for="b-projet">Projet</label><select id="b-projet" name="projet"><option>Habiter</option><option>Investir</option></select></div>
+        </div>
         <label class="check"><input type="checkbox" required> J'accepte d'être recontacté au sujet de ce programme.</label>
         <button class="btn btn-sage" type="submit" style="width:100%">Recevoir la brochure</button>
         <p class="form-status" role="status"></p>
       </form>
+      <div class="aside-contact">
+        <p>Vous préférez en parler ?</p>
+        <a class="btn btn-line" href="tel:+33666582003" data-track="clic_telephone">06 66 58 20 03</a>
+        <a class="link-arrow" href="#rdv" data-track="cta_rdv">Prendre rendez-vous →</a>
+      </div>
     </aside>
   </div>
 </section>
@@ -160,8 +227,9 @@
         <ul>
           <li>TRIANGUL SAS</li>
           <li>51, rue de Ponthieu<br>75008 Paris</li>
+          <li><a href="tel:+33666582003" data-track="clic_telephone">06 66 58 20 03</a></li>
           <li><a href="mailto:a.deba@triangul.fr">a.deba@triangul.fr</a></li>
-          <li><a href="contact.html">Formulaire de contact</a></li>
+          <li><a href="contact.html#rappel">Être rappelé</a></li>
         </ul>
       </div>
     </div>
@@ -171,6 +239,7 @@
     </div>
   </div>
 </footer>
+<nav class="mobile-cta" aria-label="Actions rapides"><a href="#brochure" data-track="cta_brochure">Brochure</a><a href="#rdv" data-track="cta_rdv">Rendez-vous</a><a class="main" href="tel:+33666582003" data-track="clic_telephone"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>Appeler</a></nav>
 <script src="assets/js/programmes-data.js"></script>
 <script src="assets/js/main.js"></script>
 </body>
