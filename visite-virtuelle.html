@@ -3,197 +3,282 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Visite virtuelle 3D – T4 témoin, Les Jardins d'Armance (exemple) | TRIANGUL</title>
-<meta name="description" content="Visitez en 3D l'appartement témoin T4 des Jardins d'Armance : déplacement libre, visite guidée, lumière selon l'heure et la saison, ambiances et matériaux au choix. Exemple fictif.">
+<title>Visite virtuelle UHD – T4 témoin, Les Jardins d'Armance (exemple) | TRIANGUL</title>
+<meta name="description" content="Visitez l'appartement témoin T4 des Jardins d'Armance en images ultra haute définition : chaque pièce le matin, à midi, au coucher du soleil et la nuit, au fil des quatre saisons. Visite guidée ou libre. Exemple fictif.">
 <link rel="canonical" href="https://triangul.fr/visite-virtuelle.html">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/css/style.css">
 <style>
-  html,body{height:100%;margin:0;overflow:hidden;background:#1F2A24}
-  body.vv{font-family:var(--sans);color:var(--ink)}
-  #scene{position:fixed;inset:0;display:block;width:100%;height:100%;touch-action:none;cursor:grab}
-  #scene.measuring{cursor:crosshair}
-  .vv-bar{position:fixed;left:12px;right:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;pointer-events:none;z-index:5}
-  .vv-bar>*{pointer-events:auto}
-  .vv-top{top:12px}
-  .vv-bottom{bottom:12px;align-items:flex-end}
-  .vv-card{background:rgba(249,248,246,.94);border:1px solid var(--line);border-radius:12px;padding:8px 10px;box-shadow:0 6px 24px rgba(0,0,0,.18);backdrop-filter:blur(6px)}
-  .vv-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--sage)}
-  .vv-brand img{height:22px}
-  .vv-brand span{font:600 .78rem/1.2 var(--sans)}
-  .vv-brand small{display:block;font-weight:400;color:var(--muted)}
-  .vv-seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#fff}
-  .vv-seg button{border:0;background:transparent;padding:7px 12px;font:500 .78rem var(--sans);color:var(--ink);cursor:pointer}
-  .vv-seg button[aria-pressed="true"]{background:var(--sage);color:#fff}
-  .vv-btn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 12px;font:500 .78rem var(--sans);color:var(--ink);cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-block}
-  .vv-btn[aria-pressed="true"]{background:var(--sage);color:#fff;border-color:var(--sage)}
-  .vv-btn.brass{background:var(--brass);border-color:var(--brass);color:#1F2A24;font-weight:600}
-  .vv-btn:focus-visible,.vv-seg button:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
-  .vv-spacer{flex:1}
-  .vv-time{display:flex;flex-direction:column;gap:6px;min-width:min(520px,100%)}
-  .vv-time .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .vv-time input[type=range]{flex:1;min-width:160px;accent-color:var(--sage)}
-  .vv-time output{font:600 .95rem var(--sans);color:var(--sage);min-width:52px}
-  .vv-presets button{font-size:.72rem;padding:5px 9px}
-  .vv-sun{font-size:.74rem;color:var(--muted);line-height:1.35}
-  .vv-sun strong{color:var(--ink)}
-  .vv-legal{font-size:.68rem;color:var(--muted)}
-  #minimap{width:200px;height:150px;display:block;cursor:pointer}
-  .vv-mapcard{position:fixed;right:12px;top:128px;z-index:5;padding:6px}
-  .vv-mapcard p{margin:4px 2px 0;font-size:.68rem;color:var(--muted)}
-  .vv-poi{position:fixed;right:12px;top:314px;z-index:5;width:200px;padding:8px}
-  .vv-poi h3{font:600 .72rem var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--brass-dark);margin:2px 2px 6px}
-  .vv-poi button{display:block;width:100%;text-align:left;border:0;background:transparent;padding:6px 6px;border-radius:8px;font:500 .8rem var(--sans);cursor:pointer;color:var(--ink)}
-  .vv-poi button:hover,.vv-poi button[aria-current="true"]{background:var(--sage-soft)}
-  .vv-panel{position:fixed;left:12px;top:128px;z-index:6;width:min(340px,calc(100% - 24px));max-height:calc(100% - 310px);overflow:auto;padding:14px 16px}
-  .vv-panel h2{font-size:1.35rem;margin:0 0 4px;padding-right:20px}
-  .vv-panel .meta{font-size:.78rem;color:var(--muted);margin:0 0 8px}
-  .vv-panel p{font-size:.86rem;line-height:1.45;margin:6px 0}
-  .vv-panel ul{font-size:.84rem;padding-left:18px;margin:6px 0}
-  .vv-close{position:absolute;right:8px;top:6px;border:0;background:transparent;font-size:1.3rem;cursor:pointer;color:var(--muted)}
-  .vv-mats h3{font:600 .78rem var(--sans);margin:12px 0 6px;color:var(--sage)}
-  .vv-swatches{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
-  .vv-sw{border:1px solid var(--line);border-radius:10px;background:#fff;padding:6px;text-align:left;cursor:pointer;font:500 .74rem var(--sans);color:var(--ink)}
-  .vv-sw[aria-pressed="true"]{border-color:var(--sage);box-shadow:0 0 0 2px var(--sage) inset}
-  .vv-sw i{display:block;height:28px;border-radius:6px;margin-bottom:5px;background-size:cover}
-  .tag{display:inline-block;margin-top:3px;font:600 .62rem var(--sans);letter-spacing:.04em;text-transform:uppercase;padding:2px 6px;border-radius:999px}
-  .tag.inclus{background:#DCE4DD;color:#24332B}
-  .tag.option{background:#F3E6C7;color:#6B4F17}
-  .tag.deco{background:#E9E4DA;color:#5B625D}
-  .tag.confirmer{background:#F6DADA;color:#7A2B2B}
-  .vv-caption{position:fixed;left:50%;transform:translateX(-50%);bottom:178px;z-index:6;max-width:min(680px,calc(100% - 24px));background:rgba(31,42,36,.86);color:#fff;border-radius:10px;padding:10px 14px;font-size:.95rem;line-height:1.4;text-align:center}
-  .vv-hd{position:fixed;inset:0;z-index:5;margin:0;opacity:0;transition:opacity .9s ease;pointer-events:none;background:#111}
-  .vv-hd.on{opacity:1}
-  .vv-hd img{width:100%;height:100%;object-fit:cover;transform:scale(1.07);transition:transform 6s cubic-bezier(.25,.1,.25,1)}
-  .vv-hd.on img{transform:scale(1)}
-  .vv-hd figcaption{position:absolute;left:24px;top:132px;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.55);display:flex;flex-direction:column;gap:4px}
-  .vv-hd small{font:600 .72rem var(--sans);letter-spacing:.16em;text-transform:uppercase;color:#E5C98F}
-  .vv-hd b{font:500 clamp(1.6rem,3.6vw,2.6rem)/1.1 Georgia,serif}
-  .vv-hd span{font-size:.75rem;opacity:.85}
-  .vv-hd[hidden]{display:none}
-  .vv-hd.manual{pointer-events:auto;cursor:zoom-out;z-index:20}
-  .vv-hd.manual figcaption::after{content:"Cliquez ou Échap pour revenir à la 3D";font-size:.78rem;opacity:.9;margin-top:6px}
-  .vv-caption[hidden],.vv-measure[hidden],.vv-panel[hidden]{display:none}
-  .vv-measure{position:fixed;left:50%;top:72px;pointer-events:none;max-width:calc(100% - 24px);text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.18);transform:translateX(-50%);z-index:6;background:var(--sage);color:#fff;border-radius:999px;padding:7px 14px;font:600 .85rem var(--sans)}
-  .vv-pad{position:fixed;left:16px;bottom:190px;z-index:5;display:none;grid-template-columns:repeat(3,46px);grid-template-rows:repeat(2,46px);gap:6px}
-  .vv-pad button{border:1px solid var(--line);background:rgba(249,248,246,.9);border-radius:12px;font-size:1.1rem;color:var(--sage);touch-action:none}
-  .touch .vv-pad{display:grid}
-  .vv-start{position:fixed;inset:0;z-index:20;display:grid;place-items:center;background:linear-gradient(180deg,rgba(31,42,36,.55),rgba(31,42,36,.85))}
-  .vv-start[hidden]{display:none}
-  .vv-start .box{background:var(--paper);border-radius:16px;padding:26px 26px 22px;max-width:520px;margin:16px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
-  .vv-start h1{font-size:2rem;margin:4px 0 8px}
-  .vv-start p{font-size:.92rem;line-height:1.5;margin:8px 0}
-  .vv-start .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
-  .vv-start .kbd{font-size:.78rem;color:var(--muted)}
-  .vv-loading{font-size:.8rem;color:var(--muted)}
-  .vv-err{position:fixed;inset:0;display:grid;place-items:center;color:#fff;padding:20px;text-align:center;z-index:30;background:#1F2A24}
-  .vv-poi-label{position:fixed;z-index:4;transform:translate(-50%,-50%);border:2px solid #fff;background:var(--brass);color:#1F2A24;border-radius:999px;font:600 .72rem var(--sans);padding:5px 10px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.3);white-space:nowrap}
-  .vv-poi-label[hidden]{display:none}
-  .vv-caption{z-index:7}
-  .vv-bar,.vv-mapcard,.vv-poi,.vv-pad,.vv-poi-label{transition:opacity .6s ease}
-  .vv-rendering .vv-bar,.vv-rendering .vv-mapcard,.vv-rendering .vv-poi,.vv-rendering .vv-pad,.vv-rendering .vv-poi-label{opacity:0;pointer-events:none}
-  @media (max-width:860px){
-    .vv-mapcard,.vv-poi{display:none}
-    .vv-mapcard.open,.vv-poi.open{display:block}
-    .vv-poi{top:128px}
-    .vv-caption{bottom:240px;font-size:.85rem}
-    .vv-time{min-width:100%}
-    .vv-brand small{display:none}
+  :root{--gold:#C5A059;--dark:#1F2A24}
+  html,body{height:100%;margin:0;overflow:hidden;background:#111;color:#fff;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+  *{box-sizing:border-box}
+  button{font:inherit;cursor:pointer}
+  .stage{position:fixed;inset:0;overflow:hidden;background:#111;margin:0}
+  .shot{position:absolute;inset:0;margin:0;opacity:0;transition:opacity 1.3s cubic-bezier(.4,0,.2,1)}
+  .shot.on{opacity:1}
+  .shot img{width:100%;height:100%;object-fit:cover;transform:scale(1.07);will-change:transform}
+  .shot.on img{transform:scale(1);transition:transform 9s cubic-bezier(.25,.1,.25,1)}
+  .stage::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.45) 0,rgba(0,0,0,0) 22%,rgba(0,0,0,0) 55%,rgba(0,0,0,.62) 100%)}
+  .ui{position:fixed;z-index:5}
+  .card{background:rgba(20,26,22,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.14);border-radius:16px}
+  .top{top:14px;left:14px;right:14px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+  .brand{display:flex;gap:10px;align-items:center;padding:10px 14px}
+  .brand img{width:26px;height:26px}
+  .brand b{display:block;font-size:.95rem}
+  .brand span{font-size:.78rem;opacity:.85}
+  .vnav{display:flex;gap:6px;flex-wrap:wrap;padding:6px}
+  .btn{border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);color:#fff;border-radius:999px;padding:9px 15px;font-weight:600;font-size:.86rem;text-decoration:none;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+  .ui .btn{width:auto;min-height:0;margin:0;line-height:1.2;box-shadow:none}
+  .btn:hover{background:rgba(255,255,255,.18)}
+  .btn.gold{background:var(--gold);border-color:var(--gold);color:var(--dark)}
+  .btn[aria-pressed=true]{background:#fff;color:var(--dark);border-color:#fff}
+  .rooms{top:96px;right:14px;padding:12px;width:220px}
+  .rooms h3,.bar h3{margin:0 0 8px;font:600 .7rem Inter,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+  .rooms button{display:block;width:100%;text-align:left;background:none;border:0;color:#fff;padding:8px 10px;border-radius:10px;font-size:.92rem}
+  .rooms button:hover{background:rgba(255,255,255,.1)}
+  .rooms button[aria-current=true]{background:rgba(255,255,255,.92);color:var(--dark);font-weight:600}
+  .cap{left:clamp(16px,4vw,56px);bottom:150px;max-width:min(620px,calc(100% - 300px))}
+  .cap small{display:block;font:600 .74rem Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+  .cap h1{font:500 clamp(2rem,4.6vw,3.6rem)/1.05 "Cormorant Garamond",Georgia,serif;margin:0 0 8px;text-shadow:0 2px 18px rgba(0,0,0,.5)}
+  .cap p{margin:0;font-size:clamp(.95rem,1.35vw,1.08rem);line-height:1.5;text-shadow:0 1px 10px rgba(0,0,0,.6)}
+  .cap .near{display:inline-block;margin-top:8px;font-size:.75rem;opacity:.85;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:3px 9px}
+  .cap>*{transition:opacity .6s ease,transform .6s ease}
+  .cap.swap>*{opacity:0;transform:translateY(10px)}
+  .bar{left:14px;right:14px;bottom:14px;padding:12px 14px;display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap}
+  .seg{display:flex;gap:4px;flex-wrap:wrap}
+  .seg button{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.06);color:#fff;border-radius:999px;padding:7px 13px;font-size:.84rem;font-weight:500}
+  .seg button[aria-pressed=true]{background:#fff;color:var(--dark);border-color:#fff;font-weight:600}
+  .bar .grow{flex:1}
+  .legal{font-size:.7rem;opacity:.75;max-width:420px;text-align:right}
+  .guide{left:50%;transform:translateX(-50%);bottom:150px;display:flex;gap:8px;align-items:center;padding:8px 10px}
+  .prog{position:fixed;left:0;right:0;top:0;height:3px;z-index:6;background:rgba(255,255,255,.15)}
+  .prog i{display:block;height:100%;width:0;background:var(--gold);transition:width .4s ease}
+  .start{position:fixed;inset:0;z-index:20;display:grid;place-items:center;background:rgba(10,14,12,.55);backdrop-filter:blur(6px)}
+  .start .card{max-width:560px;margin:16px;padding:28px;text-align:center}
+  .start h2{font:500 2.2rem/1.1 "Cormorant Garamond",Georgia,serif;margin:0 0 10px}
+  .start p{margin:0 0 18px;opacity:.9;line-height:1.5}
+  .start .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  [hidden]{display:none!important}
+  .brand b,.brand span,.cap h1,.cap p,.start h2,.start p{color:#fff}
+  .cap small{color:#E8C98A;text-shadow:0 1px 8px rgba(0,0,0,.7)}
+  body.guiding .rooms,body.guiding .bar{opacity:0;pointer-events:none;transition:opacity .5s}
+  body.guiding .cap{bottom:96px}
+  body.guiding .guide{bottom:24px}
+  @media (max-width:900px){
+    .bar .legal,.bar .grow{display:none}
+    .bar{gap:8px;padding:8px 10px}
+    .bar h3{margin-bottom:4px}
+    .seg button{padding:5px 9px;font-size:.74rem}
+    .rooms{top:auto;bottom:178px;right:10px;left:10px;width:auto;display:flex;gap:4px;overflow-x:auto;padding:8px}
+    .rooms h3{display:none}
+    #roomList{display:flex;gap:4px}
+    .rooms button{width:auto;white-space:nowrap;flex:none}
+    .cap{max-width:calc(100% - 28px);bottom:250px}
+    .cap p{font-size:.9rem}
+    body.guiding .cap{bottom:110px}
+    .vnav .opt{display:none}
+    .legal{text-align:left}
+    .brand span{display:none}
+    .brand{padding:8px 12px}
+    .top{gap:6px}
+    .guide{left:10px;right:10px;transform:none;justify-content:center;flex-wrap:wrap;gap:6px}
+    .guide .btn,.vnav .btn{padding:8px 12px;font-size:.82rem}
   }
+  @media (prefers-reduced-motion:reduce){.shot,.shot img,.cap>*{transition:none!important}.shot img{transform:none}}
 </style>
 </head>
-<body class="vv">
-<canvas id="scene" aria-label="Vue 3D de l'appartement témoin T4. Utilisez les flèches ou ZQSD pour vous déplacer."></canvas>
+<body>
+<div class="prog" id="prog" hidden><i></i></div>
+<main class="stage" id="stage" aria-live="polite">
+  <figure class="shot on" id="shotA"><img alt=""></figure>
+  <figure class="shot" id="shotB"><img alt=""></figure>
+</main>
 
-<div class="vv-bar vv-top">
-  <a class="vv-card vv-brand" href="programme-exemple.html" title="Retour au programme">
-    <img src="assets/img/logo-mark.svg" alt="TRIANGUL">
-    <span>Les Jardins d'Armance — T4 témoin (lot B31)<small>82,4 m² · 3e étage · terrasse 22 m² sud-ouest · exemple fictif</small></span>
-  </a>
-  <div class="vv-spacer"></div>
-  <div class="vv-card" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
-    <div class="vv-seg" role="group" aria-label="Ambiance décorative">
-      <button type="button" data-amb="scandi" aria-pressed="true">Minimaliste Scandinave</button>
-      <button type="button" data-amb="contemp" aria-pressed="false">Chic Contemporain</button>
-    </div>
-    <button type="button" class="vv-btn" id="btnMats" aria-pressed="false">Sols et murs</button>
-    <button type="button" class="vv-btn" id="btnLivre" aria-pressed="false" title="Retire le mobilier et remet les finitions incluses">Version livrée</button>
-    <button type="button" class="vv-btn" id="btnCompare" title="Maintenir appuyé pour voir la version livrée">Comparer</button>
-    <button type="button" class="vv-btn" id="btnMeasure" aria-pressed="false">Mètre</button>
-    <button type="button" class="vv-btn" id="btnGuide">Visite guidée</button>
-    <button type="button" class="vv-btn" id="btnMap" aria-pressed="false">Plan</button>
-    <button type="button" class="vv-btn" id="btnFull">Plein écran</button>
-    <a class="vv-btn brass" href="galerie-t4.html">Rendus HD</a>
+<div class="ui top">
+  <div class="card brand"><img src="assets/img/logo-mark-light.svg" alt=""><div><b>Les Jardins d'Armance — T4 témoin (lot B31)</b><span>82,4 m² · 3e étage · terrasse 22 m² sud-ouest · exemple fictif</span></div></div>
+  <div class="card vnav" role="navigation" aria-label="Actions">
+    <button class="btn gold" type="button" id="btnGuide">▶ Visite guidée</button>
+    <a class="btn opt" href="galerie-t4.html">Galerie</a>
+    <a class="btn opt" href="maquette-3d.html">Maquette 3D</a>
+    <button class="btn opt" type="button" id="btnVoice" aria-pressed="false">Voix off</button>
+    <button class="btn opt" type="button" id="btnFull">Plein écran</button>
+    <a class="btn gold" id="btnRdv" href="programme-exemple.html?lot=B31&amp;typo=T4#rdv">Prendre rendez-vous</a>
   </div>
 </div>
 
-<div class="vv-card vv-mapcard" id="mapCard">
-  <canvas id="minimap" width="400" height="300" aria-label="Plan 2D : cliquez sur une pièce pour vous y rendre"></canvas>
-  <p>Plan indicatif · cliquez sur une pièce</p>
-</div>
-<nav class="vv-card vv-poi" id="poiList" aria-label="Points d'intérêt">
-  <h3>Points d'intérêt</h3>
-</nav>
+<aside class="ui card rooms" aria-label="Pièces"><h3>Pièces</h3><div id="roomList"></div></aside>
 
-<aside class="vv-card vv-panel" id="panel" hidden aria-live="polite"></aside>
-<div class="vv-caption" id="caption" hidden role="status" aria-live="polite"></div>
-<figure class="vv-hd" id="hdShot" hidden><img alt="Rendu d'ambiance haute définition de la pièce présentée"><figcaption><small>Rendu d'ambiance HD</small><b></b><span>Image de synthèse non contractuelle</span></figcaption></figure>
-<div class="vv-measure" id="measureOut" hidden></div>
+<section class="ui cap" id="cap"><small id="capTag"></small><h1 id="capTitle"></h1><p id="capText"></p><span class="near" id="capNear" hidden>Vue la plus proche disponible</span></section>
 
-<div class="vv-pad" aria-hidden="true">
-  <span></span><button type="button" data-move="f">▲</button><span></span>
-  <button type="button" data-move="l">◀</button><button type="button" data-move="b">▼</button><button type="button" data-move="r">▶</button>
+<div class="ui card guide" id="guideBar" hidden>
+  <button class="btn" type="button" id="gPrev" aria-label="Étape précédente">‹</button>
+  <button class="btn" type="button" id="gPlay">Pause</button>
+  <button class="btn" type="button" id="gNext" aria-label="Étape suivante">›</button>
+  <span id="gCount" style="font-size:.8rem;opacity:.85;min-width:52px;text-align:center"></span>
+  <button class="btn" type="button" id="gStop">Explorer librement</button>
 </div>
 
-<div class="vv-bar vv-bottom">
-  <div class="vv-card vv-time">
-    <div class="row">
-      <label for="hour" style="font:600 .78rem var(--sans);color:var(--sage)">Heure</label>
-      <input type="range" id="hour" min="6" max="23" step="0.25" value="13.5" aria-describedby="sunInfo">
-      <output id="hourOut" for="hour">13:30</output>
-    </div>
-    <div class="row">
-      <div class="vv-seg vv-presets" role="group" aria-label="Moments de la journée">
-        <button type="button" data-preset="matin" aria-pressed="false">Matin</button>
-        <button type="button" data-preset="midi" aria-pressed="true">Plein midi</button>
-        <button type="button" data-preset="coucher" aria-pressed="false">Coucher de soleil</button>
-        <button type="button" data-preset="nuit" aria-pressed="false">Nuit</button>
-      </div>
-      <div class="vv-seg vv-presets" role="group" aria-label="Saison">
-        <button type="button" data-season="hiver" aria-pressed="false">Hiver</button>
-        <button type="button" data-season="printemps" aria-pressed="true">Printemps</button>
-        <button type="button" data-season="ete" aria-pressed="false">Été</button>
-        <button type="button" data-season="automne" aria-pressed="false">Automne</button>
-      </div>
-      <button type="button" class="vv-btn brass" id="btnHd" title="Voir ce moment en image haute définition">Voir en rendu HD</button>
-    </div>
-    <div class="vv-sun" id="sunInfo"></div>
-    <div class="vv-legal">Images de synthèse non contractuelles. Exemple fictif. Simulation d'ensoleillement indicative, calculée sans les bâtiments et arbres voisins.</div>
-  </div>
-  <div class="vv-spacer"></div>
-  <div class="vv-card" style="display:flex;gap:6px;flex-wrap:wrap">
-    <button type="button" class="vv-btn" id="btnSave">Enregistrer mes choix</button>
-    <a class="vv-btn brass" id="btnRdv" href="programme-exemple.html?lot=B31&amp;typo=T4#rdv" data-track="cta_rdv">Prendre rendez-vous</a>
+<div class="ui card bar">
+  <div><h3>Moment de la journée</h3><div class="seg" id="segM"></div></div>
+  <div><h3>Saison</h3><div class="seg" id="segS"></div></div>
+  <div class="grow"></div>
+  <div class="legal">Images de synthèse d'ambiance en ultra haute définition, non contractuelles. Exemple fictif. Mobilier et décoration non fournis ; seule la notice descriptive fait foi.</div>
+</div>
+
+<div class="start" id="start">
+  <div class="card">
+    <h2>Visitez votre futur T4</h2>
+    <p>Découvrez chaque pièce en images ultra haute définition, le matin, à midi, au coucher du soleil et la nuit, au fil des quatre saisons.</p>
+    <div class="row"><button class="btn gold" type="button" id="startGuide">▶ Lancer la visite guidée</button><button class="btn" type="button" id="startFree">Explorer librement</button></div>
   </div>
 </div>
 
-<div class="vv-start" id="start">
-  <div class="box">
-    <p class="eyebrow" style="margin:0">Visite virtuelle 3D · exemple fictif</p>
-    <h1>Entrez dans votre futur T4</h1>
-    <p>Appartement témoin du lot B31 : 82,4 m², 3e étage, terrasse de 22 m² orientée sud-ouest. Changez l'heure et la saison pour voir la lumière, essayez deux ambiances et les finitions.</p>
-    <p class="kbd">Ordinateur : ZQSD, WASD ou flèches pour avancer, glisser pour regarder, clic au sol pour s'y rendre. Tablette : glisser pour regarder, toucher le sol pour avancer.</p>
-    <label class="kbd" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="optVoice"> Voix off pendant la visite guidée</label>
-    <label class="kbd" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="optCalm"> Mouvements réduits (pas de déplacement automatique de la caméra)</label>
-    <div class="btn-row">
-      <button type="button" class="btn btn-brass" id="startGuide" disabled>Commencer la visite guidée</button>
-      <button type="button" class="btn btn-ghost" id="startFree" disabled style="color:var(--sage);border-color:var(--sage)">Explorer librement</button>
-    </div>
-    <p class="vv-loading" id="loading">Chargement de la maquette…</p>
-  </div>
-</div>
+<script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const MOMENTS = { matin: "Matin", midi: "Plein midi", coucher: "Coucher de soleil", nuit: "Nuit" };
+  const SEASONS = { printemps: "Printemps", ete: "Été", automne: "Automne", hiver: "Hiver" };
+  /* Chaque image : moment natif (m) et saison (s, null = valable toute l'année). */
+  const ROOMS = {
+    entree:   { name: "L'entrée", tag: "≈ 4,6 m² · accès palier", text: "L'entrée s'ouvre directement sur le séjour lumineux, avec un grand placard de rangement intégré.",
+                imgs: [{ f: "entree", m: "midi", s: null }] },
+    sejour:   { name: "Le séjour", tag: "Séjour-cuisine ≈ 34 m² · baie sud-ouest", text: "Un grand volume ouvert sur 22 m² de terrasse : depuis le 3e étage, la lumière entre jusqu'au fond de la pièce.",
+                imgs: [{ f: "sejour-matin", m: "matin", s: null }, { f: "sejour-midi", m: "midi", s: null }, { f: "sejour-coucher", m: "coucher", s: null }, { f: "sejour-nuit", m: "nuit", s: null },
+                       { f: "sejour-hiver", m: "midi", s: "hiver" }, { f: "sejour-automne", m: "coucher", s: "automne" }] },
+    cuisine:  { name: "La cuisine", tag: "Cuisine ouverte avec îlot", text: "Îlot central, plan de travail en pierre claire et façades vert sauge : une cuisine pensée pour recevoir.",
+                imgs: [{ f: "cuisine-midi", m: "midi", s: null }, { f: "cuisine-coucher", m: "coucher", s: null }, { f: "cuisine-nuit", m: "nuit", s: null }] },
+    terrasse: { name: "La terrasse", tag: "22 m² · plein sud-ouest", text: "Une vraie pièce en plus, au 3e étage, avec une vue dégagée sur les arbres et les toits.",
+                imgs: [{ f: "terrasse-printemps", m: "matin", s: "printemps" }, { f: "terrasse-ete", m: "midi", s: "ete" }, { f: "terrasse-automne", m: "coucher", s: "automne" },
+                       { f: "terrasse-hiver", m: "matin", s: "hiver" }, { f: "terrasse-coucher", m: "coucher", s: null }, { f: "terrasse-nuit", m: "nuit", s: null }] },
+    suite:    { name: "La suite parentale", tag: "Chambre ≈ 15 m² · dressing · salle d'eau", text: "Une suite à part, au calme, prolongée par son dressing vitré et sa salle d'eau privative.",
+                imgs: [{ f: "suite-matin", m: "matin", s: null }, { f: "suite-coucher", m: "coucher", s: null }, { f: "suite-nuit", m: "nuit", s: null }] },
+    sdeau:    { name: "La salle d'eau", tag: "Salle d'eau privative ≈ 4,2 m²", text: "Douche à l'italienne, faïence toute hauteur et meuble vasque en chêne clair.",
+                imgs: [{ f: "sdeau", m: "midi", s: null }] },
+    chambre2: { name: "La chambre 2", tag: "≈ 10 m² · placard", text: "Une chambre lumineuse pour les enfants, les invités ou un bureau.",
+                imgs: [{ f: "chambre2", m: "midi", s: null }] },
+  };
+  const ORDER = ["entree", "sejour", "cuisine", "terrasse", "suite", "sdeau", "chambre2"];
+  const GUIDE = [
+    ["entree", "midi", null, "Bienvenue aux Jardins d'Armance. Poussez la porte de votre futur T4."],
+    ["sejour", "matin", null, "Le séjour au réveil : la lumière douce du matin traverse toute la pièce."],
+    ["sejour", "midi", null, "À midi, le séjour est baigné de lumière, grand ouvert sur la terrasse."],
+    ["cuisine", "midi", null, "La cuisine, ouverte sur le séjour, avec son îlot central en pierre claire."],
+    ["cuisine", "coucher", null, "En fin de journée, la lumière dorée entre par la fenêtre."],
+    ["terrasse", "matin", "printemps", "Au printemps, la terrasse s'éveille au milieu des arbres en fleurs."],
+    ["terrasse", "midi", "ete", "En été, le débord de toiture protège le salon d'extérieur du soleil de midi."],
+    ["terrasse", "coucher", "automne", "En automne, les feuillages se parent d'or et de rouge."],
+    ["terrasse", "matin", "hiver", "En hiver, la neige couvre les toits ; à l'intérieur, il fait bon."],
+    ["sejour", "midi", "hiver", "Le soleil bas d'hiver entre jusqu'au fond du séjour."],
+    ["sejour", "coucher", "automne", "Une fin d'après-midi d'automne, face aux arbres flamboyants."],
+    ["sejour", "coucher", "printemps", "Plein sud-ouest : le soleil vous accompagne jusqu'au soir."],
+    ["suite", "matin", null, "La suite parentale, au calme, avec son dressing vitré."],
+    ["sdeau", "midi", null, "Sa salle d'eau privative, avec douche à l'italienne."],
+    ["chambre2", "midi", null, "La chambre 2, pour les enfants, les invités ou un bureau."],
+    ["suite", "coucher", null, "Le soir, la lumière dorée filtre à travers les voilages."],
+    ["suite", "nuit", null, "La nuit, l'éclairage devient doux et chaleureux."],
+    ["cuisine", "nuit", null, "Les suspensions s'allument pour le dîner."],
+    ["sejour", "nuit", null, "Le séjour devient un cocon."],
+    ["terrasse", "nuit", null, "Et pour finir la journée, la terrasse sous les étoiles."],
+  ];
+  const state = { room: "sejour", m: "coucher", s: "printemps" };
+  const big = () => innerWidth * (devicePixelRatio || 1) >= 1200; /* ordinateurs et écrans haute densité : UHD 3840 px */
+  const src = (f) => "assets/img/visite/" + f + (big() ? "" : "-hd") + ".jpg";
+  const preload = (f) => { const i = new Image(); i.src = src(f); };
 
-<noscript><div class="vv-err">La visite 3D nécessite JavaScript. <a style="color:#C5A059" href="programme-exemple.html">Retour au programme</a></div></noscript>
-<script type="module" src="assets/js/visite.js"></script>
+  /* Choix de la photo : 1) heure et saison exactes ; 2) la nuit, la vue de nuit ; 3) automne ou hiver, la vue de la saison ;
+     4) la vue de la saison ; 5) la vue de l'heure choisie ; 6) la vue par défaut. */
+  function pick(roomId, m, s) {
+    const L = ROOMS[roomId].imgs, f = (fn) => L.find(fn);
+    const im = f((i) => i.m === m && i.s === s) || f((i) => i.m === m && i.s === null && (m === "nuit" || !L.some((j) => j.s === s && j.m !== "nuit" && (s === "hiver" || s === "automne"))))
+      || (m === "nuit" && f((i) => i.m === "nuit"))
+      || ((s === "hiver" || s === "automne") && f((i) => i.s === s))
+      || f((i) => i.s === s) || f((i) => i.m === m) || L[0];
+    const exact = L.length === 1 || (im.m === m && (im.s === s || im.s === null)) || (im.s === s && m !== "nuit");
+    return { im, exact };
+  }
+
+  let front = $("#shotA"), back = $("#shotB"), current = "", ticket = 0;
+  function show(f, alt) {
+    if (f === current) return; current = f;
+    const t = ++ticket, img = back.querySelector("img");
+    const go = () => { if (t !== ticket) return; back.classList.add("on"); front.classList.remove("on"); [front, back] = [back, front]; };
+    img.alt = alt; img.onload = img.onerror = () => { if (t === ticket) requestAnimationFrame(() => requestAnimationFrame(go)); };
+    img.src = src(f);
+  }
+  function caption(r, text, near) {
+    const c = $("#cap"); c.classList.add("swap");
+    setTimeout(() => {
+      $("#capTag").textContent = r.tag; $("#capTitle").textContent = r.name; $("#capText").textContent = text || r.text;
+      $("#capNear").hidden = !near; c.classList.remove("swap");
+    }, 350);
+  }
+  function render(text) {
+    const r = ROOMS[state.room], p = pick(state.room, state.m, state.s);
+    show(p.im.f, r.name + " — " + MOMENTS[p.im.m] + (p.im.s ? ", " + SEASONS[p.im.s].toLowerCase() : ""));
+    caption(r, text, !p.exact && !guide);
+    document.querySelectorAll("#roomList button").forEach((b) => b.setAttribute("aria-current", String(b.dataset.r === state.room)));
+    document.querySelectorAll("#segM button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.m === state.m)));
+    document.querySelectorAll("#segS button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.s === state.s)));
+    ROOMS[state.room].imgs.forEach((i) => preload(i.f));
+  }
+
+  ORDER.forEach((id) => { const b = document.createElement("button"); b.type = "button"; b.dataset.r = id; b.textContent = ROOMS[id].name; b.onclick = () => { stopGuide(); state.room = id; render(); }; $("#roomList").appendChild(b); });
+  Object.entries(MOMENTS).forEach(([k, v]) => { const b = document.createElement("button"); b.type = "button"; b.dataset.m = k; b.textContent = v; b.onclick = () => { stopGuide(); state.m = k; render(); }; $("#segM").appendChild(b); });
+  Object.entries(SEASONS).forEach(([k, v]) => { const b = document.createElement("button"); b.type = "button"; b.dataset.s = k; b.textContent = v; b.onclick = () => { stopGuide(); state.s = k; render(); }; $("#segS").appendChild(b); });
+
+  /* ---------- Visite guidée ---------- */
+  const STEP_MS = 6500;
+  let guide = null;
+  function speak(t) { if ($("#btnVoice").getAttribute("aria-pressed") !== "true" || !("speechSynthesis" in window)) return; speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = "fr-FR"; speechSynthesis.speak(u); }
+  function guideStep(i) {
+    if (!guide) return;
+    guide.i = Math.max(0, Math.min(GUIDE.length - 1, i));
+    const [room, m, s, t] = GUIDE[guide.i];
+    state.room = room; state.m = m; state.s = s || state.s;
+    render(t); speak(t);
+    $("#gCount").textContent = guide.i + 1 + " / " + GUIDE.length;
+    $("#prog i").style.width = ((guide.i + 1) / GUIDE.length) * 100 + "%";
+    const nx = GUIDE[guide.i + 1]; if (nx) preload(pick(nx[0], nx[1], nx[2] || state.s).im.f);
+    clearTimeout(guide.t);
+    if (!guide.paused) guide.t = setTimeout(() => (guide.i < GUIDE.length - 1 ? guideStep(guide.i + 1) : endGuide()), STEP_MS);
+  }
+  function startGuide() {
+    $("#start").hidden = true; guide = { i: 0, paused: false, t: null };
+    document.body.classList.add("guiding"); $("#guideBar").hidden = false; $("#prog").hidden = false; $("#gPlay").textContent = "Pause";
+    guideStep(0);
+  }
+  function stopGuide() {
+    if (!guide) return; clearTimeout(guide.t); guide = null;
+    document.body.classList.remove("guiding"); $("#guideBar").hidden = true; $("#prog").hidden = true;
+    if ("speechSynthesis" in window) speechSynthesis.cancel();
+  }
+  function endGuide() {
+    stopGuide(); state.room = "sejour"; state.m = "coucher"; state.s = "printemps"; render("Ce lot vous plaît ? Un conseiller vous présente le plan et sa disponibilité.");
+  }
+  $("#btnGuide").onclick = startGuide; $("#startGuide").onclick = startGuide;
+  $("#startFree").onclick = () => { $("#start").hidden = true; };
+  $("#gNext").onclick = () => guide && (guide.i < GUIDE.length - 1 ? guideStep(guide.i + 1) : endGuide());
+  $("#gPrev").onclick = () => guide && guideStep(guide.i - 1);
+  $("#gStop").onclick = stopGuide;
+  $("#gPlay").onclick = () => { if (!guide) return; guide.paused = !guide.paused; $("#gPlay").textContent = guide.paused ? "Lecture" : "Pause"; guideStep(guide.i); };
+  $("#btnVoice").onclick = (e) => { const on = e.currentTarget.getAttribute("aria-pressed") !== "true"; e.currentTarget.setAttribute("aria-pressed", String(on)); if (!on && "speechSynthesis" in window) speechSynthesis.cancel(); };
+  $("#btnFull").onclick = () => { if (document.fullscreenElement) document.exitFullscreen(); else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => {}); };
+  function stepRoom(d) { const k = ORDER.indexOf(state.room) + d; state.room = ORDER[(k + ORDER.length) % ORDER.length]; render(); }
+  addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { stopGuide(); $("#start").hidden = true; }
+    if (e.key === "ArrowRight") guide ? $("#gNext").click() : stepRoom(1);
+    if (e.key === "ArrowLeft") guide ? $("#gPrev").click() : stepRoom(-1);
+  });
+  let sx = null;
+  addEventListener("touchstart", (e) => (sx = e.touches[0].clientX), { passive: true });
+  addEventListener("touchend", (e) => { if (sx === null) return; const dx = e.changedTouches[0].clientX - sx; sx = null; if (Math.abs(dx) < 50) return; if (guide) (dx < 0 ? $("#gNext") : $("#gPrev")).click(); else stepRoom(dx < 0 ? 1 : -1); });
+  document.addEventListener("visibilitychange", () => { if (guide && !guide.paused) { if (document.hidden) clearTimeout(guide.t); else guideStep(guide.i); } });
+
+  render();
+  if (location.hash === "#guidee") startGuide();
+  if (location.hash === "#libre") $("#start").hidden = true;
+  window.__visite = { state, pick, ROOMS, GUIDE, startGuide, stopGuide };
+})();
+</script>
 </body>
 </html>
